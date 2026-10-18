@@ -1,0 +1,155 @@
+"""`sthira` command line."""
+
+from __future__ import annotations
+
+import sys
+from typing import Optional
+
+import typer
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+
+from . import api, config, store
+
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
+app = typer.Typer(help="Sthira: your AI forgets what you decided. Sthira doesn't.", no_args_is_help=True)
+console = Console()
+
+COLORS = {"settled": "green", "proposed": "yellow", "rejected": "red", "superseded": "dim"}
+
+
+def _entry_table(entries, title: str) -> Table:
+    t = Table(title=title, show_lines=False, expand=True)
+    t.add_column("id", style="cyan", no_wrap=True)
+    t.add_column("kind", no_wrap=True)
+    t.add_column("statement", ratio=3)
+    t.add_column("status", no_wrap=True)
+    t.add_column("source", ratio=1)
+    for e in entries:
+        t.add_row(e.id, e.kind, e.statement, f"[{COLORS.get(e.status, 'white')}]{e.status}[/]",
+                  f"{e.source.title} · {(e.decided_at or '')[:10]}")
+    return t
+
+
+@app.command()
+def ingest(path: str, kind: Optional[str] = typer.Option(None, help="chatgpt | claude_ai | claude_code | transcript")):
+    """Import a ChatGPT/Claude export, Claude Code sessions, or transcripts (file, folder or .zip)."""
+    r = api.ingest(path, kind)
+    console.print(f"[green]Ingested[/] {r['messages']} new messages from {r['sources']} sources.")
+
+
+@app.command()
+def extract(limit: Optional[int] = typer.Option(None, help="Max conversations to process")):
+    """Extract decisions and settled context from new messages using the local model."""
+    console.print(f"Using [bold]{config.model()}[/] via {config.provider()}…")
+    with console.status("Reading…") as status:
+        entries = api.extract(limit, on_progress=lambda i, n, t: status.update(f"[{i}/{n}] {t}"))
+    if entries:
+        console.print(_entry_table(entries, f"{len(entries)} new entries (proposed, awaiting review)"))
+    else:
+        console.print("Nothing new worth recording.")
+
+
+@app.command("list")
+def list_(status: Optional[str] = None, kind: Optional[str] = None, q: Optional[str] = None):
+    """Show the ledger."""
+    console.print(_entry_table(api.list_entries(status, kind, q), "Ledger"))
+
+
+@app.command()
+def review():
+    """Go through proposed entries: [s]ettle, [r]eject (Sthira learns), or [k] skip."""
+    pending = api.list_entries(status="proposed")
+    if not pending:
+        console.print("Nothing to review.")
+        return
+    for e in pending:
+        console.print(Panel(f"[bold]{e.statement}[/]\n\nWhy: {e.rationale or '-'}\n"
+                            f"Source: {e.source.title} ({(e.decided_at or '')[:10]})\n“{e.source.quote}”",
+                            title=f"{e.kind} · {e.id}"))
+        choice = typer.prompt("[s]ettle / [r]eject / [k] skip / [q]uit", default="s").lower()[:1]
+        if choice == "q":
+            break
+        if choice == "s":
+            api.review(e.id, "settle")
+        elif choice == "r":
+            note = typer.prompt("Why? (optional, helps Sthira learn)", default="", show_default=False)
+            api.review(e.id, "reject", note or None)
+
+
+@app.command()
+def settle(entry_id: str):
+    """Confirm an entry."""
+    console.print(_entry_table([api.review(entry_id, "settle")], "Settled"))
+
+
+@app.command()
+def reject(entry_id: str, note: Optional[str] = typer.Option(None, "--note", "-n")):
+    """Reject a bad extraction; future extractions learn from it."""
+    console.print(_entry_table([api.review(entry_id, "reject", note)], "Rejected"))
+
+
+@app.command()
+def supersede(old_id: str, new_id: str):
+    """Replace an old decision with a new one (the old one is kept, marked superseded)."""
+    console.print(_entry_table([api.supersede(old_id, new_id)], "Superseded"))
+
+
+@app.command()
+def check(text: str):
+    """Check new work against what you've settled."""
+    v = api.check(text)
+    if v.verdict == "contradicts":
+        for c in v.conflicts:
+            e = c.entry
+            console.print(Panel(
+                f"[bold red]Contradicts a settled {e.kind}[/]\n\n{e.statement}\n"
+                f"[dim]Decided {(e.decided_at or '')[:10]} in “{e.source.title}”: “{e.source.quote}”[/]\n\n{c.explanation}",
+                title="⚠ Sthira", border_style="red"))
+    else:
+        console.print(Panel(f"[green]{v.verdict}[/] with your settled context.", title="Sthira", border_style="green"))
+
+
+@app.command()
+def correct(text: str, note: str):
+    """Tell Sthira a check verdict was wrong; it adapts future checks."""
+    api.correct_check(text, note)
+    console.print("[green]Noted.[/] Future checks will use this correction.")
+
+
+@app.command()
+def sync(path: str = typer.Argument("AGENTS.md")):
+    """Write settled context into AGENTS.md / CLAUDE.md for every coding agent."""
+    api.sync(path)
+    console.print(f"[green]Updated[/] {path}")
+
+
+@app.command()
+def stats():
+    """Show how Sthira's precision changes as it learns from your corrections."""
+    s = api.feedback_stats()
+    console.print(s)
+
+
+@app.command()
+def mcp():
+    """Run the MCP server (stdio) so AI tools can read and check against your ledger."""
+    from .mcp_server import main
+
+    main()
+
+
+@app.command()
+def where():
+    """Show where the ledger lives."""
+    console.print(str(config.db_path()))
+
+
+if __name__ == "__main__":
+    app()

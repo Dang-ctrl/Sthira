@@ -1,0 +1,150 @@
+[
+ {
+  "id": "c1",
+  "title": "DB choice for Acme Notes",
+  "create_time": 1772618000,
+  "current_node": "c1-3",
+  "mapping": {
+   "root": {
+    "id": "root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "c1-0"
+    ]
+   },
+   "c1-0": {
+    "id": "c1-0",
+    "parent": "root",
+    "children": [
+     "c1-1"
+    ],
+    "message": {
+     "id": "c1-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772618000,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "I'm building Acme Notes. Should the user store be Postgres or MongoDB?"
+      ]
+     }
+    }
+   },
+   "c1-1": {
+    "id": "c1-1",
+    "parent": "c1-0",
+    "children": [
+     "c1-2"
+    ],
+    "message": {
+     "id": "c1-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1772618060,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Both work. MongoDB is flexible; Postgres gives you relational joins and strong consistency."
+      ]
+     }
+    }
+   },
+   "c1-2": {
+    "id": "c1-2",
+    "parent": "c1-1",
+    "children": [
+     "c1-3"
+    ],
+    "message": {
+     "id": "c1-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772618120,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "We need joins across users, orgs and shared notebooks. Ok let's go with Postgres, not MongoDB."
+      ]
+     }
+    }
+   },
+   "c1-3": {
+    "id": "c1-3",
+    "parent": "c1-2",
+    "children": [],
+    "message": {
+     "id": "c1-3",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1772618180,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Great choice. I'll design the schema around Postgres."
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "c2",
+  "title": "Random chat",
+  "create_time": 1772704400,
+  "current_node": "c2-1",
+  "mapping": {
+   "root": {
+    "id": "root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "c2-0"
+    ]
+   },
+   "c2-0": {
+    "id": "c2-0",
+    "parent": "root",
+    "children": [
+     "c2-1"
+    ],
+    "message": {
+     "id": "c2-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772704400,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "thanks, that was helpful! what's a good name for a cat?"
+      ]
+     }
+    }
+   },
+   "c2-1": {
+    "id": "c2-1",
+    "parent": "c2-0",
+    "children": [],
+    "message": {
+     "id": "c2-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1772704460,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "How about Miso?"
+      ]
+     }
+    }
+   }
+  }
+ }
+]

@@ -8,8 +8,8 @@ Sthira (स्थिर, "steady, firm") remembers what you decided while workin
 Hackathon: Hacktoberfest Hack Day Bengaluru, 18 Oct 2026. Track 2 (Best Open-Source AI Project), problem statement **O2, Adaptive AI with Memory and Self-Correction**. **Submissions close at 15:30 IST**: public repo plus a live deployment URL.
 
 ## Team and ownership
-- **Ojas** (+ Claude): core engine in `sthira/` (except `mcp_server.py` unless handed over). Orchestrates and merges.
-- **Vidit** (+ Claude): `web/` (FastAPI API + UI) and deployment; `sthira/mcp_server.py` if handed over.
+- **Ojas** (+ Claude): core engine in `sthira/` including `mcp_server.py`. Orchestrates and merges.
+- **Vidit** (+ Claude): `web/` (FastAPI API + UI) and deployment. Import `sthira.api` directly (see CONTRACTS.md).
 - **Danica**: `demo/`, `eval/`, README polish, pitch, demo video, submission.
 - Never edit a file someone else owns without asking. Interfaces live in `docs/CONTRACTS.md`.
 
