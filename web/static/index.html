@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sthira</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Sthira <span class="deva">स्थिर</span></h1>
+    <p class="tag">Your AI forgets what you decided. Sthira doesn't.</p>
+  </div>
+  <span id="backend" class="pill" hidden></span>
+</header>
+
+<main>
+  <section class="stats" id="stats" aria-label="Ledger stats"></section>
+
+  <section class="card" aria-labelledby="check-h">
+    <h2 id="check-h">Check new work</h2>
+    <p class="hint">Paste a plan, prompt or diff description. Sthira compares it with your settled decisions.</p>
+    <form id="check-form">
+      <textarea id="check-text" rows="3" placeholder="e.g. Let's switch the user store to MongoDB"></textarea>
+      <div class="row">
+        <button type="submit" class="primary">Check</button>
+        <button type="button" class="ghost" data-sample="Let's switch the user store to MongoDB for flexible schemas.">Try: MongoDB</button>
+        <button type="button" class="ghost" data-sample="Add a password login form with a forgot-password flow.">Try: passwords</button>
+        <button type="button" class="ghost" data-sample="Add an index on the Postgres users table to speed up org joins.">Try: consistent</button>
+      </div>
+    </form>
+    <div id="verdict" aria-live="polite"></div>
+  </section>
+
+  <section class="card" aria-labelledby="ledger-h">
+    <div class="ledger-head">
+      <h2 id="ledger-h">Ledger</h2>
+      <div class="filters">
+        <input id="f-q" type="search" placeholder="Search" aria-label="Search entries">
+        <select id="f-status" aria-label="Status">
+          <option value="">All statuses</option>
+          <option>proposed</option><option>settled</option>
+          <option>rejected</option><option>superseded</option>
+        </select>
+        <select id="f-kind" aria-label="Kind">
+          <option value="">All kinds</option>
+          <option>decision</option><option>open_question</option><option>preference</option>
+          <option>commitment</option><option>lesson</option><option>assumption</option>
+        </select>
+      </div>
+    </div>
+    <ul id="entries" class="entries"></ul>
+  </section>
+
+  <section class="card" aria-labelledby="src-h">
+    <h2 id="src-h">Sources</h2>
+    <form id="ingest-form" class="row">
+      <input id="ingest-file" type="file" aria-label="Source file" required>
+      <select id="ingest-kind" aria-label="Source kind">
+        <option value="">Auto-detect</option>
+        <option value="chatgpt">ChatGPT export</option>
+        <option value="claude_code">Claude Code session</option>
+        <option value="transcript">Transcript</option>
+      </select>
+      <button type="submit">Ingest</button>
+      <button type="button" id="extract-btn" class="primary">Extract decisions</button>
+    </form>
+    <p id="src-msg" class="hint" aria-live="polite"></p>
+  </section>
+</main>
+
+<footer>Local-first · open-weight model · every entry cites its source</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>
