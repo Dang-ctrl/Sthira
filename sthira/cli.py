@@ -48,12 +48,16 @@ def ingest(path: str, kind: Optional[str] = typer.Option(None, help="chatgpt | c
 def extract(limit: Optional[int] = typer.Option(None, help="Max conversations to process")):
     """Extract decisions and settled context from new messages using the local model."""
     console.print(f"Using [bold]{config.model()}[/] via {config.provider()}…")
+    skipped: list[str] = []
     with console.status("Reading…") as status:
-        entries = api.extract(limit, on_progress=lambda i, n, t: status.update(f"[{i}/{n}] {t}"))
+        entries = api.extract(limit, on_progress=lambda i, n, t: status.update(f"[{i}/{n}] {t}"), errors=skipped)
     if entries:
         console.print(_entry_table(entries, f"{len(entries)} new entries (proposed, awaiting review)"))
     else:
-        console.print("Nothing new worth recording.")
+        console.print("Nothing new worth recording." if not skipped else "No new entries from what could be read.")
+    if skipped:
+        console.print(f"[yellow]{len(skipped)} chunk(s) could not be read and stay pending. Run `sthira extract` again to continue.[/]")
+        console.print(f"[dim]{skipped[0]}[/]")
 
 
 @app.command("list")

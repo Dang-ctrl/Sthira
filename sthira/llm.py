@@ -15,6 +15,14 @@ class LLMError(RuntimeError):
     pass
 
 
+class LLMRateLimited(LLMError):
+    """Quota exhausted on every configured model. `retry_after` is the provider's suggested wait in seconds."""
+
+    def __init__(self, message: str, retry_after: float = 20.0):
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
 class LLMUnavailable(LLMError):
     """The model server can't be reached at all. Unlike a bad response, retrying the next chunk won't help."""
 
@@ -66,6 +74,7 @@ def _chat_openai(system: str, user: str, schema: dict, timeout: float, max_token
     headers = {"Authorization": f"Bearer {config.openai_api_key()}"}
     models = [config.model()] + ([config.fallback_model()] if config.fallback_model() else [])
     last: LLMError | None = None
+    longest_wait = 0.0
     for model in models:
         payload = {
             "model": model,
@@ -83,7 +92,8 @@ def _chat_openai(system: str, user: str, schema: dict, timeout: float, max_token
                 raise LLMError(f"Model provider timed out after {timeout:.0f}s") from e
             if r.status_code == 429:
                 wait = _retry_after(r)
-                last = LLMError(f"Rate limited by the model provider ({model}). {r.text[:200]}")
+                longest_wait = max(longest_wait, wait)
+                last = LLMRateLimited(f"Rate limited by the model provider ({model}). {r.text[:200]}", wait)
                 if attempt < 2 and wait <= 6:
                     time.sleep(wait)
                     continue
@@ -91,6 +101,8 @@ def _chat_openai(system: str, user: str, schema: dict, timeout: float, max_token
             if r.status_code >= 400:
                 raise LLMError(f"Provider error {r.status_code}: {r.text[:300]}")
             return _parse_json(r.json()["choices"][0]["message"]["content"])
+    if isinstance(last, LLMRateLimited):
+        last.retry_after = longest_wait or last.retry_after
     raise last or LLMError("Model call failed")
 
 
