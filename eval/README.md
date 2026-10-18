@@ -39,6 +39,20 @@ The critic only runs when the first pass claims a conflict. It asks a concrete q
 - **Contradiction detection** caught both drifts in the agent session (MongoDB migration vs the Postgres decision, password login vs magic-links-only), citing the original chat.
 - **Verdict self-correction:** a second "critic" pass re-examines every claimed contradiction and drops false alarms (e.g. adding a cache in front of the chosen database). User corrections of verdicts become rules for both passes.
 
+## Dogfood: Sthira reading its own build
+
+We ran Sthira on the Claude Code session in which it was built (143 messages, qwen3.8-27b with gpt-oss-120b as fallback on a free hosted tier). It extracted **24 entries**. Some it got right, and they are the decisions we actually made:
+- "The project will be named Sthira" and, separately, "The project will not use the name Decisis".
+- "The pitch should not rely on the 'Hacktoberfest PR' angle because PRs no longer earn rewards in the 2026 program" (we changed course after reading the new rules).
+- "The tool will run on a local open-weight model to ensure user data privacy".
+- Open questions we really had: the in-browser vs hosted model for the demo, and who "Iris" is.
+
+It also got things wrong, which is why a person reviews every entry:
+- Several entries are conversation chatter attributed to "the user" ("The user prefers the assistant to continue work autonomously"). The extractor prompt tells the model to write about the project, and this model sometimes doesn't.
+- An earlier local run on qwen3:4b recorded "use Stet as the project name", a candidate we later dropped. That's the case the ledger is for: the entry gets superseded by the Sthira decision, and the history stays.
+
+Running this also found a real bug. A first pass read only 17 of 143 messages because rate-limited and over-long chunks were skipped silently, while the CLI said "2 new entries". Fixed in PR #17: the extractor now waits out rate limits, splits dense chunks, and reports what it could not read.
+
 ## Limits
 - One small scenario, built by the same team that built the system. Treat these as smoke-test numbers, not a benchmark.
 - The reviewer is simulated (keyword match against gold), and borderline items such as merged entries are judged strictly.
