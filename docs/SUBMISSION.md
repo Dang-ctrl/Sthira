@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Project name | **Sthira** |
-| Team | Ojas Mutreja, Vidit, Danica |
+| Team | ECR (team 040): Ojas Mutreja (lead), Vidit Dang, Danica Gupta |
 | Track | **Track 2: Best Open-Source AI Project** |
 | Primary problem statement | **O2: Adaptive AI with Memory and Self-Correction** |
 | Public GitHub repository | https://github.com/HelloOjasMutreja/Sthira |
