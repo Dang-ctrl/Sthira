@@ -20,12 +20,21 @@ if os.environ.get("VERCEL") and "STHIRA_PROVIDER" not in os.environ:
     os.environ["STHIRA_PROVIDER"] = "openai"
     os.environ.setdefault("STHIRA_MODEL", "alibaba/qwen-3-32b")
 
-from sthira import api, config, store  # noqa: E402
+from sthira import api, config, llm, store  # noqa: E402
 
 from . import seed  # noqa: E402
 
 app = FastAPI(title="Sthira", version="0.1.0")
 _lock = threading.Lock()
+
+
+@app.middleware("http")
+async def vercel_oidc(request, call_next):
+    # Vercel passes a short-lived OIDC token per request; AI Gateway accepts it as the API key.
+    token = request.headers.get("x-vercel-oidc-token")
+    if token:
+        os.environ["VERCEL_OIDC_TOKEN"] = token
+    return await call_next(request)
 
 
 def con():
@@ -89,8 +98,21 @@ def check(body: CheckBody):
         raise HTTPException(400, "text is empty")
     try:
         return api.check(body.text[:4000], con=con()).model_dump()
-    except Exception as e:  # surface model/provider problems to the UI instead of a blank 500
+    except Exception as e:
+        # If the hosted model is unreachable, the built-in examples fall back to verdicts recorded from a
+        # real local Qwen3 run (labelled as such). Anything else surfaces the error honestly.
+        cached = _cached_checks().get(body.text.strip())
+        if cached:
+            cached["model"] = f"{cached['model']} (recorded from a local run; hosted model unavailable)"
+            return cached
         raise HTTPException(502, f"Model call failed: {e}")
+
+
+def _cached_checks() -> dict:
+    import json
+
+    p = ROOT / "demo" / "cached_checks.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
 
 @app.post("/api/correct")
@@ -105,6 +127,31 @@ async def ingest(file: UploadFile = File(...), kind: str | None = Form(None)):
     if len(data) > 4_000_000:
         raise HTTPException(413, "File too large for the hosted demo (4 MB). Run Sthira locally for full exports.")
     return api.ingest_upload(file.filename or "upload.json", data, kind or None, con=con())
+
+
+@app.post("/api/import")
+async def import_and_extract(file: UploadFile = File(...), kind: str | None = Form(None)):
+    """Ingest + extract in one request (serverless instances don't share /tmp between requests)."""
+    data = await file.read()
+    if len(data) > 4_000_000:
+        raise HTTPException(413, "File too large for the hosted demo (4 MB). Run Sthira locally for full exports.")
+    c = con()
+    r = api.ingest_upload(file.filename or "upload.json", data, kind or None, con=c)
+    try:
+        llm.chat_json("Reply with JSON.", 'Return {"ok": true}', {"type": "object", "properties": {"ok": {"type": "boolean"}}, "required": ["ok"]})
+    except Exception as e:
+        raise HTTPException(502, f"Model call failed: {e}")
+    entries = api.extract(3, con=c)
+    return {"messages": r["messages"], "sources": r["sources"], "entries": [e.model_dump() for e in entries]}
+
+
+@app.get("/api/health")
+def health():
+    try:
+        out = llm.chat_json("Reply with JSON.", 'Return {"ok": true}', {"type": "object", "properties": {"ok": {"type": "boolean"}}, "required": ["ok"]})
+        return {"model": config.model(), "ok": bool(out.get("ok"))}
+    except Exception as e:
+        raise HTTPException(502, f"Model call failed: {e}")
 
 
 @app.post("/api/extract")

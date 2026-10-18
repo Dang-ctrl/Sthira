@@ -196,7 +196,7 @@ async function run() {
           <div class="quote">“${esc(c.entry.source.quote)}”</div>
           <div class="meta">Decided ${day(c.entry.decided_at)} in “${esc(c.entry.source.title)}”</div>
           <p style="margin:8px 0 0">${esc(c.explanation)}</p></div>`).join("") +
-        `<div class="actions" style="margin-top:12px"><button class="ghost" id="wrong">This isn’t a conflict, teach Sthira</button></div></div>`;
+        `<p class="meta" style="margin:10px 0 0">Checked by ${esc(v.model)}</p><div class="actions" style="margin-top:12px"><button class="ghost" id="wrong">This isn’t a conflict, teach Sthira</button></div></div>`;
       $("#wrong").onclick = () => teach(text);
     } else {
       $("#result").innerHTML = `<div class="verdict ok"><h3>✓ ${v.verdict === "unrelated" ? "No related decisions, go ahead" : "Consistent with what you’ve settled"}</h3><p class="meta" style="margin:0">Checked by ${esc(v.model)}</p></div>`;
@@ -263,10 +263,9 @@ $("#up").onclick = async () => {
   const fd = new FormData(); fd.append("file", f);
   $("#upmsg").innerHTML = `<span class="spinner"></span> Importing…`;
   try {
-    const r = await j("/api/ingest", {method: "POST", body: fd});
-    $("#upmsg").innerHTML = `<span class="spinner"></span> ${r.messages} messages in. Extracting with the open-weight model…`;
-    const out = await j("/api/extract", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({limit: 3})});
-    $("#upmsg").textContent = `${out.length} new entries to review.`;
+    $("#upmsg").innerHTML = `<span class="spinner"></span> Importing and extracting with the open-weight model…`;
+    const out = await j("/api/import", {method: "POST", body: fd});
+    $("#upmsg").textContent = `${out.messages} messages in · ${out.entries.length} new entries to review.`;
     filter = "proposed"; load();
   } catch (e) { $("#upmsg").innerHTML = `<span class="err">${esc(e.message)}</span>`; }
 };
