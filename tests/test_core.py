@@ -75,3 +75,27 @@ def test_sync_replaces_managed_block(tmp_path):
     sync.sync(con, str(target))
     text = target.read_text(encoding="utf-8")
     assert text.count(sync.START) == 1 and "hand-written notes" in text and "Use Postgres" in text
+
+
+def test_rejections_become_rules_for_next_extraction(tmp_path):
+    from sthira import api, feedback
+
+    con = store.connect(tmp_path / "t.db")
+    e = store.insert_entry(con, _entry("The user named the kitten Miso", status="proposed"))
+    assert feedback.extraction_guidance(con) == ""
+    api.review(e.id, "reject", "Personal life is not a project decision.", con=con)
+    g = feedback.extraction_guidance(con)
+    assert "Personal life is not a project decision." in g and "kitten Miso" in g
+    s = feedback.stats(con)
+    assert s["corrections"] == 1 and s["entries"]["rejected"] == 1
+
+
+def test_replace_supersedes_and_keeps_history(tmp_path):
+    from sthira import api
+
+    con = store.connect(tmp_path / "t.db")
+    old = store.insert_entry(con, _entry("Use Postgres for the user store"))
+    r = api.replace(old.id, "Use CockroachDB for the user store", "multi-region writes", con=con)
+    assert r["old"].status == "superseded" and r["old"].superseded_by == r["new"].id
+    assert r["new"].status == "settled" and r["new"].rationale == "multi-region writes"
+    assert [e.id for e in store.list_entries(con, status="settled")] == [r["new"].id]

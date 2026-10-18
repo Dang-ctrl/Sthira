@@ -1,0 +1,8 @@
+[
+ {"text": "Migrate the user store from Postgres to MongoDB and denormalize memberships to avoid joins.", "expect": "contradicts"},
+ {"text": "Add email + password login with a forgot-password reset flow.", "expect": "contradicts"},
+ {"text": "Set up the mobile app release pipeline now, before the web app is stable.", "expect": "contradicts"},
+ {"text": "Put a Memcached layer in front of the user database for faster profile loads", "expect": "ok"},
+ {"text": "Add a Redis cache in front of the user store to speed up notebook search", "expect": "ok"},
+ {"text": "Add a dark mode toggle to the settings page.", "expect": "ok"}
+]

@@ -1,0 +1,72 @@
+[
+ {
+  "kind": "decision",
+  "keywords": [
+   "postgres"
+  ],
+  "statement": "Use Postgres, not MongoDB, for the user store (joins across users, orgs, notebooks)."
+ },
+ {
+  "kind": "decision",
+  "keywords": [
+   "magic"
+  ],
+  "statement": "Login uses magic links only; no passwords."
+ },
+ {
+  "kind": "open_question",
+  "keywords": [
+   "pricing"
+  ],
+  "statement": "Pricing (monthly vs annual) is undecided until beta."
+ },
+ {
+  "kind": "decision",
+  "keywords": [
+   "sveltekit"
+  ],
+  "statement": "Use SvelteKit, not Next.js."
+ },
+ {
+  "kind": "preference",
+  "keywords": [
+   "typescript"
+  ],
+  "statement": "Always TypeScript in strict mode."
+ },
+ {
+  "kind": "lesson",
+  "keywords": [
+   "fcm|firebase"
+  ],
+  "statement": "FCM was flaky for iOS push; don't rely on it for iOS."
+ },
+ {
+  "kind": "decision",
+  "keywords": [
+   "apns"
+  ],
+  "statement": "Use APNs directly for iOS push."
+ },
+ {
+  "kind": "decision",
+  "keywords": [
+   "mobile"
+  ],
+  "statement": "Ship web first, mobile after web is stable."
+ },
+ {
+  "kind": "commitment",
+  "keywords": [
+   "onboarding"
+  ],
+  "statement": "Danica drafts onboarding copy by Friday."
+ },
+ {
+  "kind": "decision",
+  "keywords": [
+   "monday|standup"
+  ],
+  "statement": "Weekly standups move to Mondays at 10."
+ }
+]

@@ -17,6 +17,14 @@ def extraction_guidance(con: sqlite3.Connection, limit: int = 6) -> str:
     if not rejected and not accepted:
         return ""
     lines = ["Learn from the user's past corrections:"]
+    notes = []
+    for r in rows:
+        if r["action"] == "reject" and r["note"] and r["note"] not in notes:
+            notes.append(r["note"])
+    if notes:
+        lines.append("RULES the user taught you when rejecting past extractions. Apply them strictly; when an item "
+                     "falls under one of these rules, do not extract it:")
+        lines.extend(f"- {n}" for n in notes[:limit])
     if rejected:
         lines.append("The user REJECTED these as not worth recording. Do NOT extract similar items:")
         for r in rejected:
@@ -35,9 +43,10 @@ def check_guidance(con: sqlite3.Connection, limit: int = 6) -> str:
     ).fetchall()
     if not rows:
         return ""
-    lines = ["The user corrected earlier verdicts. Apply these lessons:"]
+    lines = ["RULES the user taught you by correcting earlier verdicts. They are general rules: apply them to any "
+             "similar situation, not only the original example. They override your own judgement:"]
     for r in rows:
-        lines.append(f"- For input like \"{(r['snippet'] or '')[:160]}\": {r['note']}")
+        lines.append(f"- {r['note']} (example: \"{(r['snippet'] or '')[:120]}\")")
     return "\n".join(lines)
 
 

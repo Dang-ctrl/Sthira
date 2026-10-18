@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sqlite3
 
 from . import config, feedback, llm, store
@@ -35,6 +36,34 @@ SCHEMA = {
 }
 
 
+CRITIC = """Answer one concrete question about a settled decision and some new work.
+Question: does the NEW WORK stop using, migrate away from, remove, or go against what the SETTLED ENTRY chose,
+or use an option the settled entry rejected?
+- Migrating from the chosen thing to something else: YES.
+- Adding the rejected option (even "alongside" the chosen one): YES.
+- Doing things in the opposite order the entry requires: YES.
+- Keeping the chosen thing and only adding something around it (a cache, an index, a replica, a test): NO.
+Do not judge whether the new work is a good idea. Follow any rules the user taught you."""
+
+CRITIC_SCHEMA = {
+    "type": "object",
+    "properties": {"what_settled_chose": {"type": "string"}, "what_new_work_does": {"type": "string"},
+                   "goes_against_settled": {"type": "boolean"}},
+    "required": ["what_settled_chose", "what_new_work_does", "goes_against_settled"],
+}
+
+
+def _confirm(entry: Entry, text: str, explanation: str, guidance: str) -> bool:
+    """Self-correction pass: re-examine one claimed conflict; drop it if it doesn't hold up."""
+    user = (f"SETTLED ENTRY: {entry.statement}" + (f" Reason: {entry.rationale}" if entry.rationale else "")
+            + f"\n\nNEW WORK: {text}\n\n"
+            + (f"{guidance}\n\n" if guidance else "") + "Does the new work go against the settled entry?")
+    try:
+        return bool(llm.chat_json(CRITIC, user, CRITIC_SCHEMA).get("goes_against_settled", True))
+    except llm.LLMError:
+        return True  # if the critic fails, keep the warning rather than silently drop it
+
+
 def candidates(con: sqlite3.Connection, text: str, k: int = 12) -> list[Entry]:
     settled = store.list_entries(con, status="settled")
     if len(settled) <= k:
@@ -61,13 +90,18 @@ def check(con: sqlite3.Connection, text: str) -> Verdict:
         for i, e in enumerate(cands)
     )
     guidance = feedback.check_guidance(con)
-    system = SYSTEM + ("\n\n" + guidance if guidance else "")
-    data = llm.chat_json(system, f"SETTLED:\n{listing}\n\nNEW WORK:\n{text}", SCHEMA)
+    # Learned rules sit right before the new work: small models weigh nearby instructions far more.
+    user = f"SETTLED:\n{listing}\n\n" + (f"{guidance}\n\n" if guidance else "") + f"NEW WORK:\n{text}"
+    data = llm.chat_json(SYSTEM, user, SCHEMA)
     conflicts = []
     for c in data.get("conflicts", []):
         n = c.get("n")
         if isinstance(n, int) and 0 <= n < len(cands):
-            conflicts.append(Conflict(entry=cands[n], explanation=c.get("explanation", "")))
+            explanation = re.sub(r"\s*\[\d+\]", "", c.get("explanation", "")).replace("settled decision states", "decision states")
+            if any(x.entry.id == cands[n].id for x in conflicts):
+                continue
+            if _confirm(cands[n], text, explanation, guidance):
+                conflicts.append(Conflict(entry=cands[n], explanation=explanation))
     verdict = data.get("verdict", "unrelated")
     if verdict == "contradicts" and not conflicts:
         verdict = "consistent"
