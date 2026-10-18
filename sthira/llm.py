@@ -14,6 +14,10 @@ class LLMError(RuntimeError):
     pass
 
 
+class LLMUnavailable(LLMError):
+    """The model server can't be reached at all. Unlike a bad response, retrying the next chunk won't help."""
+
+
 def _parse_json(text: str) -> dict:
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
     if text.startswith("```"):
@@ -38,7 +42,12 @@ def chat_json(system: str, user: str, schema: dict, timeout: float = 240.0) -> d
             "think": False,
             "options": {"temperature": 0, "num_ctx": 16384},
         }
-        r = httpx.post(f"{config.ollama_host()}/api/chat", json=payload, timeout=timeout)
+        try:
+            r = httpx.post(f"{config.ollama_host()}/api/chat", json=payload, timeout=timeout)
+        except (httpx.ConnectError, httpx.ConnectTimeout) as e:
+            raise LLMUnavailable(f"Can't reach Ollama at {config.ollama_host()}. Is it running? Start it with `ollama serve`.") from e
+        except httpx.TimeoutException as e:
+            raise LLMError(f"Ollama timed out after {timeout:.0f}s") from e
         if r.status_code >= 400:
             raise LLMError(f"Ollama error {r.status_code}: {r.text[:300]}")
         return _parse_json(r.json()["message"]["content"])
@@ -54,7 +63,12 @@ def chat_json(system: str, user: str, schema: dict, timeout: float = 240.0) -> d
         "response_format": {"type": "json_object"},
     }
     headers = {"Authorization": f"Bearer {config.openai_api_key()}"}
-    r = httpx.post(f"{base}/chat/completions", json=payload, headers=headers, timeout=timeout)
+    try:
+        r = httpx.post(f"{base}/chat/completions", json=payload, headers=headers, timeout=timeout)
+    except (httpx.ConnectError, httpx.ConnectTimeout) as e:
+        raise LLMUnavailable(f"Can't reach the model provider at {base}.") from e
+    except httpx.TimeoutException as e:
+        raise LLMError(f"Model provider timed out after {timeout:.0f}s") from e
     if r.status_code >= 400:
         raise LLMError(f"Provider error {r.status_code}: {r.text[:300]}")
     return _parse_json(r.json()["choices"][0]["message"]["content"])

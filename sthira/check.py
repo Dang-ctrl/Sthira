@@ -60,6 +60,8 @@ def _confirm(entry: Entry, text: str, explanation: str, guidance: str) -> bool:
             + (f"{guidance}\n\n" if guidance else "") + "Does the new work go against the settled entry?")
     try:
         return bool(llm.chat_json(CRITIC, user, CRITIC_SCHEMA).get("goes_against_settled", True))
+    except llm.LLMUnavailable:
+        raise
     except llm.LLMError:
         return True  # if the critic fails, keep the warning rather than silently drop it
 
