@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "web/app.py": { "maxDuration": 120 }
+  }
+}

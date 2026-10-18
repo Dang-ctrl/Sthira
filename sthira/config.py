@@ -22,8 +22,12 @@ def ollama_host() -> str:
 
 
 def openai_base_url() -> str:
-    return os.environ.get("STHIRA_OPENAI_BASE_URL", "").rstrip("/")
+    url = os.environ.get("STHIRA_OPENAI_BASE_URL", "")
+    if not url and (os.environ.get("AI_GATEWAY_API_KEY") or os.environ.get("VERCEL_OIDC_TOKEN")):
+        url = "https://ai-gateway.vercel.sh/v1"  # Vercel AI Gateway, serving open-weight models (e.g. alibaba/qwen-3-32b)
+    return url.rstrip("/")
 
 
 def openai_api_key() -> str:
-    return os.environ.get("STHIRA_OPENAI_API_KEY", "")
+    return (os.environ.get("STHIRA_OPENAI_API_KEY") or os.environ.get("AI_GATEWAY_API_KEY")
+            or os.environ.get("VERCEL_OIDC_TOKEN", ""))

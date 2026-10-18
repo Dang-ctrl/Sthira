@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sthira: what you decided, kept</title>
+<meta name="description" content="Sthira remembers what you decided with AI and warns when new work contradicts it. Local-first, open-weight, open source.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Noto+Serif+Devanagari:wght@500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f3ee; --panel:#fffdf9; --ink:#1c1a17; --muted:#6b655c; --line:#e4ddd2;
+  --accent:#8a4b16; --accent-soft:#f3e6d8;
+  --ok:#2f6b3f; --ok-soft:#e3efe5; --bad:#a3271f; --bad-soft:#f7e2df; --warn:#8a6a10; --warn-soft:#f5eccd;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(60,40,10,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141210; --panel:#1c1916; --ink:#efe9e0; --muted:#a39a8d; --line:#2f2a24;
+    --accent:#e0a36a; --accent-soft:#2e2216;
+    --ok:#7fc28e; --ok-soft:#18271c; --bad:#f08a80; --bad-soft:#2d1715; --warn:#e6c35c; --warn-soft:#2a2410;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141210; --panel:#1c1916; --ink:#efe9e0; --muted:#a39a8d; --line:#2f2a24;
+  --accent:#e0a36a; --accent-soft:#2e2216;
+  --ok:#7fc28e; --ok-soft:#18271c; --bad:#f08a80; --bad-soft:#2d1715; --warn:#e6c35c; --warn-soft:#2a2410;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header{padding:36px 0 20px;display:flex;gap:24px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:14px}
+.deva{font-family:"Noto Serif Devanagari",serif;font-size:44px;color:var(--accent);line-height:1}
+h1{font-family:"Instrument Serif",serif;font-weight:400;font-size:46px;margin:0;letter-spacing:-.01em;line-height:1}
+.tag{font-family:"Instrument Serif",serif;font-style:italic;font-size:22px;color:var(--muted);margin:10px 0 0}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-size:12px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 10px;color:var(--muted)}
+.badge b{color:var(--ink);font-weight:600}
+.grid{display:grid;grid-template-columns:1.05fr 1fr;gap:20px;margin:8px 0 40px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}h1{font-size:38px}.deva{font-size:36px}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px}
+.card h2{font-family:"Instrument Serif",serif;font-weight:400;font-size:26px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 14px;font-size:14px}
+textarea{width:100%;min-height:92px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;background:var(--bg);color:var(--ink)}
+textarea:focus,input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chip{font-size:13px;border:1px dashed var(--line);border-radius:999px;padding:4px 10px;background:transparent;color:var(--muted);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--ink);color:var(--bg);border:0;border-radius:10px;padding:10px 16px;font:600 14px Inter,sans-serif;cursor:pointer}
+button.primary:disabled{opacity:.5;cursor:wait}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px 10px;font:500 13px Inter,sans-serif;cursor:pointer}
+button.ghost:hover{border-color:var(--accent)}
+.result{margin-top:16px}
+.verdict{border-radius:12px;padding:16px;border:1px solid}
+.verdict.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.verdict.ok{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 35%,transparent)}
+.verdict h3{margin:0 0 8px;font-size:15px}
+.verdict.bad h3{color:var(--bad)} .verdict.ok h3{color:var(--ok)}
+.conflict{border-top:1px solid color-mix(in srgb,var(--bad) 25%,transparent);padding-top:10px;margin-top:10px}
+.quote{font-family:"Instrument Serif",serif;font-style:italic;font-size:18px;color:var(--ink);margin:6px 0;border-left:3px solid var(--accent);padding-left:10px}
+.meta{font-size:12.5px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg)}
+.stat .n{font-family:"Instrument Serif",serif;font-size:34px;line-height:1}
+.stat .l{font-size:12px;color:var(--muted);margin-top:4px}
+.arrow{color:var(--ok)}
+.tabs{display:flex;gap:4px;margin:0 0 12px;flex-wrap:wrap}
+.tab{border:0;background:transparent;color:var(--muted);padding:6px 10px;border-radius:8px;cursor:pointer;font:500 13px Inter,sans-serif}
+.tab.on{background:var(--accent-soft);color:var(--accent)}
+.tab .c{opacity:.7;margin-left:4px}
+.list{display:flex;flex-direction:column;gap:10px;max-height:640px;overflow:auto;padding-right:4px}
+.entry{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg)}
+.entry.superseded{opacity:.6}
+.entry.rejected{opacity:.55}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.kind{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600}
+.st{font-size:11px;border-radius:999px;padding:2px 8px}
+.st.settled{background:var(--ok-soft);color:var(--ok)} .st.proposed{background:var(--warn-soft);color:var(--warn)}
+.st.rejected{background:var(--bad-soft);color:var(--bad)} .st.superseded{background:var(--line);color:var(--muted)}
+.stmt{margin:6px 0 4px;font-weight:500}
+.why{font-size:13.5px;color:var(--muted);margin:0 0 6px}
+.actions{display:flex;gap:6px;margin-top:8px}
+.how{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:0 0 28px}
+@media (max-width:900px){.how{grid-template-columns:1fr 1fr}}
+.step{border-top:2px solid var(--accent);padding-top:10px}
+.step b{display:block;font-family:"Instrument Serif",serif;font-weight:400;font-size:20px}
+.step span{font-size:13.5px;color:var(--muted)}
+pre{font:12.5px/1.5 "JetBrains Mono",monospace;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;white-space:pre-wrap}
+.upload{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.err{color:var(--bad);font-size:13.5px}
+footer{color:var(--muted);font-size:13px;padding:24px 0 40px;border-top:1px solid var(--line)}
+footer a{color:var(--accent)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand"><span class="deva">स्थिर</span><h1>Sthira</h1></div>
+      <p class="tag">Your AI forgets what you decided. Sthira doesn’t.</p>
+    </div>
+    <div class="badges">
+      <span class="badge">model <b id="model">…</b></span>
+      <span class="badge"><b>open-weight</b> · <b>open source</b> · MIT</span>
+      <span class="badge"><a href="https://github.com/HelloOjasMutreja/Sthira" style="color:inherit">GitHub ↗</a></span>
+    </div>
+  </header>
+
+  <section class="how">
+    <div class="step"><b>1 · Reads your AI history</b><span>ChatGPT and Claude exports, Claude Code sessions, meeting transcripts.</span></div>
+    <div class="step"><b>2 · Keeps what you settled</b><span>Decisions with reasons and a verbatim source quote. Nothing is deleted, only superseded.</span></div>
+    <div class="step"><b>3 · Speaks up</b><span>When new work contradicts a past decision, it warns and cites where you decided.</span></div>
+    <div class="step"><b>4 · Learns from you</b><span>Reject a bad extraction or correct a verdict, and the next run adapts.</span></div>
+  </section>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Check new work</h2>
+        <p class="sub">Paste what an AI agent is about to do, or a plan of your own. Sthira checks it against what you’ve settled.</p>
+        <textarea id="text" placeholder="e.g. Migrate the user store from Postgres to MongoDB and denormalize memberships…"></textarea>
+        <div class="chips" id="chips"></div>
+        <button class="primary" id="go">Check against my decisions</button>
+        <div class="result" id="result"></div>
+        <div class="stats" id="stats"></div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <h2>Bring your own history</h2>
+        <p class="sub">Upload a ChatGPT/Claude <code>conversations.json</code>, a Claude Code <code>.jsonl</code> or a transcript (<code>.md</code>). The hosted demo reads up to 3 conversations; run locally with Ollama for everything.</p>
+        <div class="upload">
+          <input type="file" id="file" accept=".json,.jsonl,.md,.txt,.zip">
+          <button class="ghost" id="up">Import &amp; extract</button>
+          <span id="upmsg" class="meta"></span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <h2>Every agent sees it</h2>
+        <p class="sub"><code>sthira sync</code> writes this block into <code>AGENTS.md</code> / <code>CLAUDE.md</code>. Over MCP, agents call <code>check</code> before acting.</p>
+        <pre id="agents">…</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Your ledger</h2>
+      <p class="sub">Everything Sthira extracted, each with its source. Settle what’s right; reject what isn’t (that’s how it learns).</p>
+      <div class="tabs" id="tabs"></div>
+      <div class="list" id="list"></div>
+    </div>
+  </div>
+
+  <footer>
+    Built at Hacktoberfest Hack Day Bengaluru 2026 · Track 2 · O2: Adaptive AI with Memory and Self-Correction ·
+    Runs locally on Qwen3 via Ollama; this hosted demo uses open-weight Qwen3 through an OpenAI-compatible gateway ·
+    <a href="https://github.com/HelloOjasMutreja/Sthira">source</a>
+  </footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const day = s => (s || "").slice(0, 10);
+let entries = [], filter = "settled";
+
+const examples = [
+  "Migrate the user store from Postgres to MongoDB and denormalize memberships to avoid joins.",
+  "Add email + password login with a forgot-password reset flow.",
+  "Set up the mobile app release pipeline now, before the web app is stable.",
+  "Add a dark mode toggle to the settings page.",
+];
+$("#chips").innerHTML = examples.map((e, i) => `<button class="chip" data-i="${i}">${esc(e.split(" ").slice(0, 6).join(" "))}…</button>`).join("");
+$("#chips").onclick = ev => { const i = ev.target.dataset.i; if (i !== undefined) { $("#text").value = examples[i]; run(); } };
+
+async function j(url, opts) {
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
+  return r.json();
+}
+
+async function run() {
+  const text = $("#text").value.trim();
+  if (!text) return;
+  $("#go").disabled = true;
+  $("#result").innerHTML = `<p class="meta"><span class="spinner"></span> Checking with the open-weight model…</p>`;
+  try {
+    const v = await j("/api/check", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text})});
+    if (v.verdict === "contradicts") {
+      $("#result").innerHTML = `<div class="verdict bad"><h3>⚠ Contradicts ${v.conflicts.length} settled decision${v.conflicts.length > 1 ? "s" : ""}</h3>` +
+        v.conflicts.map(c => `<div class="conflict"><div class="stmt">${esc(c.entry.statement)}</div>
+          <div class="quote">“${esc(c.entry.source.quote)}”</div>
+          <div class="meta">Decided ${day(c.entry.decided_at)} in “${esc(c.entry.source.title)}”</div>
+          <p style="margin:8px 0 0">${esc(c.explanation)}</p></div>`).join("") +
+        `<div class="actions" style="margin-top:12px"><button class="ghost" id="wrong">This isn’t a conflict, teach Sthira</button></div></div>`;
+      $("#wrong").onclick = () => teach(text);
+    } else {
+      $("#result").innerHTML = `<div class="verdict ok"><h3>✓ ${v.verdict === "unrelated" ? "No related decisions, go ahead" : "Consistent with what you’ve settled"}</h3><p class="meta" style="margin:0">Checked by ${esc(v.model)}</p></div>`;
+    }
+  } catch (e) { $("#result").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  $("#go").disabled = false;
+}
+$("#go").onclick = run;
+$("#text").addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) run(); });
+
+async function teach(text) {
+  const note = prompt("What should Sthira learn? (e.g. 'caching layers are fine, only the primary store matters')");
+  if (!note) return;
+  await j("/api/correct", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text, note})});
+  $("#result").insertAdjacentHTML("beforeend", `<p class="meta">Noted. Future checks will use this correction.</p>`);
+  loadStats();
+}
+
+function renderTabs() {
+  const counts = s => entries.filter(e => e.status === s).length;
+  const tabs = [["settled", "Settled"], ["proposed", "To review"], ["superseded", "Superseded"], ["rejected", "Rejected"]];
+  $("#tabs").innerHTML = tabs.map(([k, l]) => `<button class="tab ${filter === k ? "on" : ""}" data-k="${k}">${l}<span class="c">${counts(k)}</span></button>`).join("");
+}
+$("#tabs").onclick = e => { const k = e.target.closest(".tab")?.dataset.k; if (k) { filter = k; render(); } };
+
+function render() {
+  renderTabs();
+  const list = entries.filter(e => e.status === filter).reverse();
+  $("#list").innerHTML = list.length ? list.map(e => `
+    <div class="entry ${e.status}">
+      <div class="row"><span class="kind">${e.kind.replace("_", " ")}</span><span class="st ${e.status}">${e.status}</span></div>
+      <div class="stmt">${esc(e.statement)}</div>
+      ${e.rationale ? `<p class="why">Why: ${esc(e.rationale)}</p>` : ""}
+      <div class="quote" style="font-size:16px">“${esc(e.source.quote)}”</div>
+      <div class="meta">${esc(e.source.title)} · ${day(e.decided_at)}${e.alternatives_rejected?.length ? " · rejected: " + esc(e.alternatives_rejected.join(", ")) : ""}</div>
+      ${e.status === "proposed" ? `<div class="actions"><button class="ghost" data-a="settle" data-id="${e.id}">Settle</button><button class="ghost" data-a="reject" data-id="${e.id}">Reject</button></div>` : ""}
+    </div>`).join("") : `<p class="meta">Nothing here.</p>`;
+}
+$("#list").onclick = async e => {
+  const b = e.target.closest("button[data-a]"); if (!b) return;
+  const note = b.dataset.a === "reject" ? (prompt("Why is this wrong? (helps Sthira learn)") || null) : null;
+  await j(`/api/entries/${b.dataset.id}/review`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({action: b.dataset.a, note})});
+  load();
+};
+
+async function loadStats() {
+  const s = await j("/api/stats");
+  const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
+  $("#stats").innerHTML = `
+    <div class="stat"><div class="n">${s.entries?.settled ?? 0}</div><div class="l">settled entries</div></div>
+    <div class="stat"><div class="n">${s.corrections}</div><div class="l">corrections learned</div></div>
+    <div class="stat"><div class="n">${pct(s.precision_before)} <span class="arrow">→ ${pct(s.precision_after)}</span></div><div class="l">extraction precision, before → after learning</div></div>`;
+}
+
+async function load() {
+  entries = await j("/api/entries");
+  render();
+  loadStats();
+  $("#agents").textContent = (await j("/api/agents-md")).markdown;
+}
+
+$("#up").onclick = async () => {
+  const f = $("#file").files[0]; if (!f) return;
+  const fd = new FormData(); fd.append("file", f);
+  $("#upmsg").innerHTML = `<span class="spinner"></span> Importing…`;
+  try {
+    const r = await j("/api/ingest", {method: "POST", body: fd});
+    $("#upmsg").innerHTML = `<span class="spinner"></span> ${r.messages} messages in. Extracting with the open-weight model…`;
+    const out = await j("/api/extract", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({limit: 3})});
+    $("#upmsg").textContent = `${out.length} new entries to review.`;
+    filter = "proposed"; load();
+  } catch (e) { $("#upmsg").innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+};
+
+j("/api/meta").then(m => $("#model").textContent = m.model);
+load();
+</script>
+</body>
+</html>
