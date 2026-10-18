@@ -38,7 +38,7 @@ def _entry_table(entries, title: str) -> Table:
 
 
 @app.command()
-def ingest(path: str, kind: Optional[str] = typer.Option(None, help="chatgpt | claude_ai | claude_code | transcript")):
+def ingest(path: str, kind: Optional[str] = typer.Option(None, help="chatgpt | claude_ai | gemini | claude_code | transcript")):
     """Import a ChatGPT/Claude export, Claude Code sessions, or transcripts (file, folder or .zip)."""
     r = api.ingest(path, kind)
     console.print(f"[green]Ingested[/] {r['messages']} new messages from {r['sources']} sources.")

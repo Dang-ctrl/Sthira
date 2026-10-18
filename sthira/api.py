@@ -12,12 +12,12 @@ from .models import Entry, Verdict
 
 
 def _ingest_results(con, results) -> dict:
-    sources = messages = 0
+    messages, ids = 0, []
     for src_type, key, title, msgs in results:
         sid = store.upsert_source(con, src_type, key, title)
         messages += store.add_messages(con, sid, msgs)
-        sources += 1
-    return {"sources": sources, "messages": messages}
+        ids.append(sid)
+    return {"sources": len(ids), "messages": messages, "source_ids": ids}
 
 
 def ingest(path: str, kind: str | None = None, con=None) -> dict:
@@ -30,9 +30,10 @@ def ingest_upload(filename: str, data: bytes, kind: str | None = None, con=None)
     return _ingest_results(con, parse_bytes(filename, data, kind))
 
 
-def extract(limit: int | None = None, con=None, on_progress=None) -> list[Entry]:
+def extract(limit: int | None = None, con=None, on_progress=None, source_ids: list[str] | None = None) -> list[Entry]:
+    """Extract from pending conversations (oldest first); pass source_ids to only read those sources."""
     con = con or store.connect()
-    return _extract.extract(con, limit, on_progress)
+    return _extract.extract(con, limit, on_progress, source_ids=source_ids)
 
 
 def list_entries(status: str | None = None, kind: str | None = None, q: str | None = None, con=None) -> list[Entry]:
@@ -46,13 +47,18 @@ def review(entry_id: str, action: str, note: str | None = None, con=None) -> Ent
     if action not in ("settle", "reject"):
         raise ValueError("action must be 'settle' or 'reject'")
     e = store.set_status(con, entry_id, "settled" if action == "settle" else "rejected",
-                         trust="confirmed" if action == "settle" else None)
+                         trust="confirmed" if action == "settle" else "quarantined")
     store.add_feedback(con, "extraction", action, entry_id, note, e.statement)
     return e
 
 
 def supersede(old_id: str, new_id: str, con=None) -> Entry:
     con = con or store.connect()
+    if old_id == new_id:
+        raise ValueError("an entry can't supersede itself")
+    for i in (old_id, new_id):  # validate both before writing anything
+        if store.get_entry(con, i) is None:
+            raise KeyError(i)
     store.set_status(con, new_id, "settled", trust="confirmed")
     return store.set_status(con, old_id, "superseded", superseded_by=new_id)
 
