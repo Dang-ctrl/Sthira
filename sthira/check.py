@@ -66,16 +66,27 @@ def _confirm(entry: Entry, text: str, explanation: str, guidance: str) -> bool:
         return True  # if the critic fails, keep the warning rather than silently drop it
 
 
+def _tokens(text: str) -> set[str]:
+    return {w[:-1] if len(w) > 3 and w.endswith("s") else w for w in re.findall(r"[a-z0-9]+", text.lower())}
+
+
+def _variants(alt: str) -> list[set[str]]:
+    """'Firebase Cloud Messaging (FCM)' matches on the full name or on 'FCM' alone."""
+    parts = [alt.split("(")[0], *re.findall(r"\(([^)]*)\)", alt)]
+    return [t for t in (_tokens(p) for p in parts) if t]
+
+
 def candidates(con: sqlite3.Connection, text: str, k: int = 12) -> list[Entry]:
     settled = store.list_entries(con, status="settled")
     if len(settled) <= k:
         return settled
     hits = [e for e in store.list_entries(con, status="settled", q=text)]
     seen = {e.id for e in hits}
-    # keep decisions with matching rejected alternatives even if FTS missed them
-    kws = set(store.keywords(text, 30))
+    # keep decisions whose rejected alternatives appear in the text even if FTS missed them;
+    # match on token subsets so "email+password", "Next.js" or "Firebase Cloud Messaging (FCM)" work too
+    words = _tokens(text)
     for e in settled:
-        if e.id not in seen and any(a.lower() in kws for a in e.alternatives_rejected):
+        if e.id not in seen and any(any(v <= words for v in _variants(a)) for a in e.alternatives_rejected):
             hits.append(e)
             seen.add(e.id)
     return hits[:k] or settled[:k]

@@ -10,6 +10,7 @@ from pathlib import Path
 from ..models import Message
 from . import chat_exports, claude_code, gemini, subtitles, transcript
 
+MAX_UNZIPPED = 500_000_000  # guards against zip bombs; real chat exports are far smaller
 ParseResult = list[tuple[str, str, str, list[Message]]]  # (source_type, path_key, title, messages)
 
 
@@ -30,6 +31,8 @@ def parse_bytes(name: str, data: bytes, kind: str | None = None, key: str | None
     if suffix == ".zip":
         out: ParseResult = []
         with zipfile.ZipFile(io.BytesIO(data)) as z:
+            if sum(i.file_size for i in z.infolist()) > MAX_UNZIPPED:
+                raise ValueError(f"Zip expands beyond {MAX_UNZIPPED // 1_000_000} MB; unzip it and ingest the files directly.")
             for n in z.namelist():
                 if n.endswith("conversations.json") or (n.endswith("MyActivity.json") and "Gemini" in n):
                     out.extend(parse_bytes(n, z.read(n), kind, f"{key}!{n}"))

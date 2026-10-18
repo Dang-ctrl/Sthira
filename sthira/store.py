@@ -108,13 +108,23 @@ def add_messages(con: sqlite3.Connection, source_id: str, msgs: list[Message]) -
     return n
 
 
-def pending_conversations(con: sqlite3.Connection) -> list[dict]:
-    """Conversations that have messages not yet extracted, oldest first."""
+def pending_conversations(con: sqlite3.Connection, source_ids: list[str] | None = None) -> list[dict]:
+    """Conversations that have messages not yet extracted, oldest conversation first.
+    A conversation is identified by (source, conv_id), so two sources sharing a conv_id never mix."""
+    where, args = "", []
+    if source_ids is not None:
+        if not source_ids:
+            return []
+        where = f" AND m.source_id IN ({','.join('?' * len(source_ids))})"
+        args = list(source_ids)
     rows = con.execute(
-        """SELECT m.*, s.type AS source_type, s.title AS source_title FROM messages m
+        f"""SELECT m.*, s.type AS source_type, s.title AS source_title, p.first_seen FROM messages m
            JOIN sources s ON s.id = m.source_id
-           WHERE m.conv_id IN (SELECT conv_id FROM messages WHERE extracted = 0)
-           ORDER BY m.source_id, m.conv_id, COALESCE(m.ts, ''), m.rowid"""
+           JOIN (SELECT source_id, conv_id, MIN(COALESCE(ts, '')) AS first_seen, MIN(rowid) AS first_row FROM messages
+                 GROUP BY source_id, conv_id HAVING SUM(extracted = 0) > 0) p
+             ON p.source_id = m.source_id AND p.conv_id = m.conv_id
+           WHERE 1 = 1{where}
+           ORDER BY p.first_seen, p.first_row, COALESCE(m.ts, ''), m.rowid""", args
     ).fetchall()
     convs: dict[tuple, dict] = {}
     for r in rows:

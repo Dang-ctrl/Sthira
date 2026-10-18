@@ -93,8 +93,9 @@ def _is_duplicate(con: sqlite3.Connection, statement: str) -> bool:
     return False
 
 
-def extract(con: sqlite3.Connection, limit: int | None = None, on_progress=None) -> list[Entry]:
-    convs = store.pending_conversations(con)
+def extract(con: sqlite3.Connection, limit: int | None = None, on_progress=None,
+            source_ids: list[str] | None = None) -> list[Entry]:
+    convs = store.pending_conversations(con, source_ids)
     if limit:
         convs = convs[:limit]
     run_id = store.start_run(con, "extract")
