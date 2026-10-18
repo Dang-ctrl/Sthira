@@ -221,5 +221,15 @@ def where():
     console.print(str(config.db_path()))
 
 
+def main():
+    from .llm import LLMError
+
+    try:
+        app()
+    except LLMError as e:
+        console.print(f"[bold red]Model error:[/] {e}")
+        raise SystemExit(2)
+
+
 if __name__ == "__main__":
-    app()
+    main()
