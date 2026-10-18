@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.db
+*.db-*
+.sthira/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+node_modules/
+.vercel/
+# scratch research copies (final reports live in docs/research/)
+reports/
+research_notes/
