@@ -13,6 +13,7 @@ import re
 from ..models import Message
 
 _TAGS = re.compile(r"<[^>]+>")
+_SPACE_BEFORE_PUNCT = re.compile(r"\s+([.,;:!?])")
 
 
 def is_gemini(obj) -> bool:
@@ -22,7 +23,7 @@ def is_gemini(obj) -> bool:
 
 def _text(h: str) -> str:
     text = re.sub(r"\s+", " ", html.unescape(_TAGS.sub(" ", h or ""))).strip()
-    return re.sub(r"\s+([.,;:!?])", r"", text)
+    return _SPACE_BEFORE_PUNCT.sub(lambda m: m.group(1), text)
 
 
 def parse(items: list) -> list[Message]:
