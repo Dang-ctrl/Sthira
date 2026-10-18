@@ -1,5 +1,10 @@
 # 2-minute demo script (judging)
 
+**First round (14:00 to 15:30) is judged on three things. Hit each one explicitly:**
+1. *At least one working feature.* Do the live MongoDB check, and show `sthira scan` on the agent session.
+2. *Relevance to the theme.* Say "Track 2, O2: memory and self-correction, on an open-weight model running locally".
+3. *Clear problem and solution.* Open with the one-line problem before touching the screen.
+
 **Setup before judges arrive:** the live URL is open in one tab. A terminal is open in the repo with `qwen3:4b` loaded (run `ollama run qwen3:4b "hi"` once to warm it up). Optionally, Claude Code is open with the Sthira MCP and hook configured.
 
 ## 0:00 The problem (15s)
