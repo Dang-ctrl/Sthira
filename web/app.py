@@ -87,6 +87,20 @@ def review(entry_id: str, body: ReviewBody):
         raise HTTPException(400, str(e))
 
 
+class ReplaceBody(BaseModel):
+    statement: str
+    rationale: str = ""
+
+
+@app.post("/api/entries/{old_id}/replace")
+def replace(old_id: str, body: ReplaceBody):
+    try:
+        r = api.replace(old_id, body.statement[:1000], body.rationale[:1000], con=con())
+    except KeyError:
+        raise HTTPException(404, "entry not found")
+    return {"old": r["old"].model_dump(), "new": r["new"].model_dump()}
+
+
 @app.post("/api/entries/{old_id}/supersede/{new_id}")
 def supersede(old_id: str, new_id: str):
     return api.supersede(old_id, new_id, con=con()).model_dump()
