@@ -5,6 +5,7 @@ from __future__ import annotations
 import difflib
 import re
 import sqlite3
+import time
 
 from . import config, feedback, llm, store
 from .models import Entry, SourceRef
@@ -93,8 +94,26 @@ def _is_duplicate(con: sqlite3.Connection, statement: str) -> bool:
     return False
 
 
+MAX_RATE_WAIT = 30.0  # seconds we're willing to wait, in total per chunk, for a rate-limited provider
+
+
+def _call_with_patience(system: str, user: str):
+    """Call the model; if it is rate limited, wait as the provider asks (bounded) and retry the same chunk."""
+    waited = 0.0
+    while True:
+        try:
+            return llm.chat_json(system, user, SCHEMA, max_tokens=3000)
+        except llm.LLMRateLimited as e:
+            wait = max(1.0, e.retry_after)
+            if waited + wait > MAX_RATE_WAIT:
+                raise
+            time.sleep(wait)
+            waited += wait
+
+
 def extract(con: sqlite3.Connection, limit: int | None = None, on_progress=None,
-            source_ids: list[str] | None = None) -> list[Entry]:
+            source_ids: list[str] | None = None, errors: list[str] | None = None) -> list[Entry]:
+    """`errors`, if given, receives one line per chunk that could not be read (they stay pending for the next run)."""
     convs = store.pending_conversations(con, source_ids)
     if limit:
         convs = convs[:limit]
@@ -102,7 +121,9 @@ def extract(con: sqlite3.Connection, limit: int | None = None, on_progress=None,
     guidance = feedback.extraction_guidance(con)
     created: list[Entry] = []
     for ci, conv in enumerate(convs):
-        for chunk in _chunks(conv["messages"]):
+        work = _chunks(conv["messages"])
+        while work:
+            chunk = work.pop(0)
             if on_progress:
                 on_progress(ci + 1, len(convs), conv["conv_title"])
             listing = "\n\n".join(
@@ -111,10 +132,17 @@ def extract(con: sqlite3.Connection, limit: int | None = None, on_progress=None,
             user = f"Conversation: {conv['conv_title']}\n\n{listing}"
             system = SYSTEM + ("\n\n" + guidance if guidance else "")
             try:
-                data = llm.chat_json(system, user, SCHEMA)
+                data = _call_with_patience(system, user)
             except llm.LLMUnavailable:
                 raise  # nothing will work until the server is back; don't report "nothing new"
-            except llm.LLMError:
+            except llm.LLMError as e:
+                if len(chunk) > 1 and not isinstance(e, llm.LLMRateLimited):
+                    # Typically output cut off mid-JSON on a dense chunk: read each half separately instead.
+                    half = len(chunk) // 2
+                    work[0:0] = [chunk[:half], chunk[half:]]
+                    continue
+                if errors is not None:
+                    errors.append(f"{conv['conv_title']}: {e}"[:240])
                 continue
             for item in data.get("entries", []):
                 idx = item.get("msg", -1)
