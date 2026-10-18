@@ -30,6 +30,7 @@ Create these in `demo/` (fictional project "Acme Notes", a note-taking app):
 4. `eval/gold.json`: the list of real decisions, questions and commitments you planted, so we can measure precision and recall.
 
 ## Log
+- Vidit: when the hosted model is down, typed checks now fall back to a labelled keyword match on explicitly rejected alternatives (e.g. "MongoDB"), and the recorded examples match regardless of case and spacing. Upload/review/teach errors are shown in the UI. Branch `feat/web-model-errors` (PR on top of #3).
 - 10:05: Critic pass added (checks 6/6). qwen3:8b comparison done. Live site deployed with seeded ledger and labelled fallback. Waiting on two Ojas-only actions (hosted model, ShipWright).
 - 09:27: `sthira demo` proves learning: precision 0.40 → 0.57 (run 1), and both agent contradictions in today's Claude Code session are caught. Web demo works locally. PR #1 is open (no ShipWright review yet, so the app may need installing by Ojas).
 - 09:15: Core engine works end to end on qwen3:4b: ingest, extract (~50s for 2 convs), settle/reject, cited contradiction check (~15s), sync, MCP. 6 tests pass. `sthira.api` matches CONTRACTS.md, so Vidit can import it directly in `web/`.

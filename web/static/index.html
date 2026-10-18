@@ -197,15 +197,21 @@ async function run() {
           <div class="meta">Decided ${day(c.entry.decided_at)} in “${esc(c.entry.source.title)}”</div>
           <p style="margin:8px 0 0">${esc(c.explanation)}</p>
           <div class="actions"><button class="ghost" data-keep="1">Keep this decision</button><button class="ghost" data-replace="${c.entry.id}">I’ve changed my mind, replace it</button></div></div>`).join("") +
-        `<p class="meta" style="margin:10px 0 0">Flagged, then double-checked by a self-correction pass · ${esc(v.model)}</p><div class="actions" style="margin-top:12px"><button class="ghost" id="wrong">This isn’t a conflict, teach Sthira</button></div></div>`;
+        `<p class="meta" style="margin:10px 0 0">${v.fallback === "keyword"
+          ? "The hosted model is offline, so this is a keyword match against alternatives you explicitly rejected, not a model verdict. Run Sthira locally for the full check."
+          : v.fallback === "recorded" ? "Recorded from a real local Qwen3 run (hosted model offline)."
+          : `Flagged, then double-checked by a self-correction pass · ${esc(v.model)}`}</p><div class="actions" style="margin-top:12px"><button class="ghost" id="wrong">This isn’t a conflict, teach Sthira</button></div></div>`;
       $("#wrong").onclick = () => teach(text);
       $("#result").querySelectorAll("[data-keep]").forEach(b => b.onclick = () => {
         b.closest(".actions").innerHTML = `<span class="meta">Kept. Tell your agent to follow the settled decision.</span>`; });
       $("#result").querySelectorAll("[data-replace]").forEach(b => b.onclick = async () => {
-        const why = prompt("Why are you changing this decision? (kept with the new entry)") ?? "";
-        const r = await j(`/api/entries/${b.dataset.replace}/replace`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({statement: text, rationale: why})});
-        b.closest(".actions").innerHTML = `<span class="meta">Superseded. The old decision is kept as history and now points to the new one.</span>`;
-        load(); });
+        const why = prompt("Why are you changing this decision? (kept with the new entry)");
+        if (why === null) return;
+        try {
+          await j(`/api/entries/${b.dataset.replace}/replace`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({statement: text, rationale: why})});
+          b.closest(".actions").innerHTML = `<span class="meta">Superseded. The old decision is kept as history and now points to the new one.</span>`;
+          load();
+        } catch (e) { b.closest(".actions").insertAdjacentHTML("beforeend", `<span class="err">${esc(e.message)}</span>`); } });
     } else {
       $("#result").innerHTML = `<div class="verdict ok"><h3>✓ ${v.verdict === "unrelated" ? "No related decisions, go ahead" : "Consistent with what you’ve settled"}</h3><p class="meta" style="margin:0">Checked by ${esc(v.model)}</p></div>`;
     }
@@ -213,7 +219,7 @@ async function run() {
     const offline = /Model call failed/.test(e.message);
     $("#result").innerHTML = offline
       ? `<div class="verdict ok" style="background:var(--warn-soft);border-color:var(--line)"><h3 style="color:var(--warn)">The hosted model is busy or offline right now</h3>
-         <p style="margin:0 0 6px">Try one of the example checks above (verdicts recorded from a real local Qwen3 run), or run Sthira on your machine, where everything runs locally:</p>
+         <p style="margin:0 0 6px">No explicitly rejected alternative matched, and a full check needs the model. Try one of the example checks above (verdicts recorded from a real local Qwen3 run), or run Sthira on your machine, where everything runs locally:</p>
          <pre>uv run sthira check "${esc(text.slice(0, 80))}"</pre></div>`
       : `<p class="err">${esc(e.message)}</p>`;
   }
@@ -225,9 +231,11 @@ $("#text").addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKe
 async function teach(text) {
   const note = prompt("What should Sthira learn? (e.g. 'caching layers are fine, only the primary store matters')");
   if (!note) return;
-  await j("/api/correct", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text, note})});
-  $("#result").insertAdjacentHTML("beforeend", `<p class="meta">Noted. Future checks will use this correction.</p>`);
-  loadStats();
+  try {
+    await j("/api/correct", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text, note})});
+    $("#result").insertAdjacentHTML("beforeend", `<p class="meta">Noted. Future checks will use this correction.</p>`);
+    loadStats();
+  } catch (e) { $("#result").insertAdjacentHTML("beforeend", `<p class="err">Couldn’t save the correction: ${esc(e.message)}</p>`); }
 }
 
 function renderTabs() {
@@ -253,8 +261,14 @@ function render() {
 $("#list").onclick = async e => {
   const b = e.target.closest("button[data-a]"); if (!b) return;
   const note = b.dataset.a === "reject" ? (prompt("Why is this wrong? (helps Sthira learn)") || null) : null;
-  await j(`/api/entries/${b.dataset.id}/review`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({action: b.dataset.a, note})});
-  load();
+  b.disabled = true;
+  try {
+    await j(`/api/entries/${b.dataset.id}/review`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({action: b.dataset.a, note})});
+    load();
+  } catch (err) {
+    b.disabled = false;
+    b.closest(".actions").insertAdjacentHTML("beforeend", `<span class="err">${esc(err.message)}</span>`);
+  }
 };
 
 async function loadStats() {
@@ -282,7 +296,11 @@ $("#up").onclick = async () => {
     const out = await j("/api/import", {method: "POST", body: fd});
     $("#upmsg").textContent = `${out.messages} messages in · ${out.entries.length} new entries to review.`;
     filter = "proposed"; load();
-  } catch (e) { $("#upmsg").innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  } catch (e) {
+    $("#upmsg").innerHTML = /Model call failed/.test(e.message)
+      ? `<span class="err">The hosted model is busy or offline, so extraction can’t run right now. Run Sthira locally with Ollama to import your history.</span>`
+      : `<span class="err">${esc(e.message)}</span>`;
+  }
 };
 
 j("/api/meta").then(m => $("#model").textContent = m.model);
