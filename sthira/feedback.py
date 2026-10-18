@@ -43,9 +43,10 @@ def check_guidance(con: sqlite3.Connection, limit: int = 6) -> str:
     ).fetchall()
     if not rows:
         return ""
-    lines = ["The user corrected earlier verdicts. Apply these lessons:"]
+    lines = ["RULES the user taught you by correcting earlier verdicts. They are general rules: apply them to any "
+             "similar situation, not only the original example. They override your own judgement:"]
     for r in rows:
-        lines.append(f"- For input like \"{(r['snippet'] or '')[:160]}\": {r['note']}")
+        lines.append(f"- {r['note']} (example: \"{(r['snippet'] or '')[:120]}\")")
     return "\n".join(lines)
 
 
