@@ -1,0 +1,7 @@
+.sthira/
+.venv/
+tests/
+docs/research/
+reports/
+research_notes/
+*.db

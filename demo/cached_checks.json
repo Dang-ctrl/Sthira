@@ -1,0 +1,109 @@
+{
+ "Migrate the user store from Postgres to MongoDB and denormalize memberships to avoid joins.": {
+  "input": "Migrate the user store from Postgres to MongoDB and denormalize memberships to avoid joins.",
+  "verdict": "contradicts",
+  "conflicts": [
+   {
+    "entry": {
+     "id": "e_68edd570aa21",
+     "kind": "decision",
+     "title": "Database choice",
+     "statement": "Acme Notes uses Postgres for the user store due to the need for joins across users, orgs, and notebooks.",
+     "rationale": "We need joins across users, orgs and notebooks",
+     "alternatives_rejected": [
+      "MongoDB"
+     ],
+     "project": "",
+     "status": "settled",
+     "trust": "confirmed",
+     "superseded_by": null,
+     "decided_at": "2026-03-04T10:06:00Z",
+     "recorded_at": "2026-10-18T03:55:44Z",
+     "source": {
+      "id": "s_eae4331baab8",
+      "type": "chatgpt",
+      "title": "Acme Notes: database choice",
+      "locator": "acme-db / acme-db-4",
+      "quote": "Ok, decided: we go with Postgres, not MongoDB. We need joins across users, orgs and notebooks."
+     },
+     "confidence": 0.9
+    },
+    "explanation": "The new work proposes migrating from Postgres to MongoDB, which directly contradicts the settled decision that Acme Notes uses Postgres for the user store due to the need for joins across users, orgs, and notebooks. The settled decision explicitly rejected MongoDB as an option, while the new work suggests using MongoDB to denormalize memberships and avoid joins."
+   }
+  ],
+  "model": "qwen3:4b"
+ },
+ "Add email + password login with a forgot-password reset flow.": {
+  "input": "Add email + password login with a forgot-password reset flow.",
+  "verdict": "contradicts",
+  "conflicts": [
+   {
+    "entry": {
+     "id": "e_b17313a60529",
+     "kind": "decision",
+     "title": "Acme Notes login flow choice",
+     "statement": "Acme Notes will use magic links only, no passwords.",
+     "rationale": "User explicitly chose magic links after noting password resets were half their support tickets at last job",
+     "alternatives_rejected": [
+      "email+password",
+      "OAuth"
+     ],
+     "project": "",
+     "status": "settled",
+     "trust": "confirmed",
+     "superseded_by": null,
+     "decided_at": "2026-03-09T11:33:00Z",
+     "recorded_at": "2026-10-18T03:54:42Z",
+     "source": {
+      "id": "s_eae4331baab8",
+      "type": "chatgpt",
+      "title": "Acme Notes: login flow",
+      "locator": "acme-auth / acme-auth-2",
+      "quote": "Let's do magic links only, no passwords."
+     },
+     "confidence": 0.95
+    },
+    "explanation": "The new work proposes adding email + password login with a forgot-password reset flow, but settled entry [1] explicitly rejected email+password and OAuth in favor of magic links only, with the reason that user chose magic links after noting password resets were half their support tickets at last job."
+   }
+  ],
+  "model": "qwen3:4b"
+ },
+ "Set up the mobile app release pipeline now, before the web app is stable.": {
+  "input": "Set up the mobile app release pipeline now, before the web app is stable.",
+  "verdict": "contradicts",
+  "conflicts": [
+   {
+    "entry": {
+     "id": "e_1962adb28489",
+     "kind": "decision",
+     "title": "Web app first, mobile after web stability",
+     "statement": "Acme Notes will ship the web app first and the mobile app after the web app is stable.",
+     "rationale": "Decision: we ship the web app first and the mobile app after web is stable.",
+     "alternatives_rejected": [],
+     "project": "",
+     "status": "settled",
+     "trust": "confirmed",
+     "superseded_by": null,
+     "decided_at": "2026-05-12T00:00:00Z",
+     "recorded_at": "2026-10-18T03:57:03Z",
+     "source": {
+      "id": "s_262b5cad772d",
+      "type": "transcript",
+      "title": "Acme Notes standup 2026-05-12",
+      "locator": "2026-05-12-standup / 2",
+      "quote": "Decision: we ship the web app first and the mobile app after web is stable."
+     },
+     "confidence": 0.9
+    },
+    "explanation": "The new work wants to set up the mobile app release pipeline before the web app is stable, but settled entry [4] states that the mobile app will ship after the web app is stable."
+   }
+  ],
+  "model": "qwen3:4b"
+ },
+ "Add a dark mode toggle to the settings page.": {
+  "input": "Add a dark mode toggle to the settings page.",
+  "verdict": "unrelated",
+  "conflicts": [],
+  "model": "qwen3:4b"
+ }
+}

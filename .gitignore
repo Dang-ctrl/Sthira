@@ -15,3 +15,5 @@ node_modules/
 reports/
 research_notes/
 .claude/launch.json
+.vercel
+.env*
