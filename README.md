@@ -6,6 +6,8 @@
 
 *sthira* (Sanskrit): steady, firm, unshakable.
 
+[![ci](https://github.com/HelloOjasMutreja/Sthira/actions/workflows/ci.yml/badge.svg)](https://github.com/HelloOjasMutreja/Sthira/actions/workflows/ci.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![open-weight: Qwen3](https://img.shields.io/badge/open--weight-Qwen3-8a4b16.svg)](https://ollama.com/library/qwen3)
+
 **[Live demo →](https://sthira-mocha.vercel.app)** · [How it learns](eval/README.md) · [Demo script](docs/DEMO_SCRIPT.md)
 
 </div>

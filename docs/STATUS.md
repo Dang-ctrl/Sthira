@@ -10,14 +10,26 @@ Update this file whenever you finish something, get blocked, or hand off (for ex
 
 | Workstream | Owner | Status | Next step |
 |---|---|---|---|
-| Core engine + MCP + hook + scan + replace | Claude | done (PR #1, #2) | — |
-| Self-correcting check (critic pass) + eval | Claude | done (PR #2): extraction 0.60→0.71 precision, checks 6/6 on qwen3:4b | — |
-| Web demo + Vercel deploy | Claude | **live** (PR #3) | hosted model blocked: see blocker below |
-| **BLOCKER: hosted model** | **Ojas** | todo | add a card to the Vercel team (unlocks AI Gateway free credits) **or** set `STHIRA_OPENAI_API_KEY` + `STHIRA_OPENAI_BASE_URL` + `STHIRA_MODEL` (e.g. Groq `qwen/qwen3-32b`) in Vercel project *sthira* env. Until then, example checks use labelled recorded verdicts |
-| **ShipWright app on repo** | **Ojas** (admin) | todo | install https://github.com/apps/shipwright-agent, then comment `/shipwright rerun` on PRs #1–#3; merge by ~12:00 regardless |
-| Demo script / pitch / backup video / submission | Danica | todo | `docs/DEMO_SCRIPT.md` is ready; rehearse, record a backup video of the live site + `sthira demo` |
-| Collaborator access for Vidit + Danica | **Ojas** | todo | Settings → Collaborators (fork PRs only get basic ShipWright checks) |
-| Polish / extra parsers / review | Vidit | #9 merged ✓; #8 overlaps #3 (suggest closing) | pick anything: e.g. Cursor or Gemini parser in `sthira/ingest/`, UI polish in `web/static/index.html` (branch off `feat/web-demo`) |
+| Core + demo/eval (#1, #2) | Claude | done, CI green | merge at ~12:00 |
+| Cursor rules #10 · model-down errors #11 · .vtt/.srt #12 · Gemini #13 · learned rules #14 · review fixes #15 | Claude | done, stacked on #2 | merge in order after #2 (integration dry-run: all merge cleanly, 17+ tests pass) |
+| Web demo (#3) | Claude + Vidit (#9 merged) | **live**: learned-rules panel, labelled offline fallbacks, scoped import | merge last |
+| Dogfood: Sthira on our own build session | Claude | running (qwen3:4b) | package as a demo moment |
+| **Hosted model** | **Ojas** | blocked | Vercel card **or** Groq key in project env |
+| **ShipWright app** | **Ojas** | not installed | install now if we want leaderboard credit before the merges |
+| **Collaborators: Vidit, Danica** | **Ojas** | todo | fork PRs miss ShipWright's full review |
+| Demo rehearsal / backup video / submission / X post | Danica | todo | `docs/DEMO_SCRIPT.md`, `docs/SUBMISSION.md` |
+
+## Keys and secrets (names only, never values here)
+
+| What | Where it lives | Used for |
+|---|---|---|
+| Groq key (free tier, expires about 25 Oct 2026) | Vercel project *sthira* → Production env `STHIRA_OPENAI_API_KEY`; Ojas's local, gitignored `.env` | the live demo's open-weight model |
+| `STHIRA_PROVIDER=openai`, `STHIRA_OPENAI_BASE_URL`, `STHIRA_MODEL=qwen/qwen3.8-27b`, `STHIRA_FALLBACK_MODEL=openai/gpt-oss-120b` | same Vercel env | model routing (fallback kicks in when Groq's 8k tokens/min quota is hit) |
+| Anthropic key (**paid**) | Ojas's local `.env` only. **Not deployed, not in Vercel.** | nothing yet; local testing only, ask Ojas first |
+
+- Never paste keys into PRs, issues or chat logs. Both keys were shared in a chat, so **rotate or revoke them after the event**.
+- Vidit: to run the web app locally against the hosted model, copy `.env.example`, ask Ojas for the key privately, and `export` the variables.
+- Groq's free tier is about 8,000 tokens a minute per model, so the live site can answer roughly 4 to 6 checks a minute. Past that it falls back to the second model, then to the labelled offline fallbacks.
 
 ## Demo data brief (Danica)
 
@@ -33,6 +45,8 @@ Create these in `demo/` (fictional project "Acme Notes", a note-taking app):
 4. `eval/gold.json`: the list of real decisions, questions and commitments you planted, so we can measure precision and recall.
 
 ## Log
+- 11:35: Hosted model live (Groq, qwen3.8-27b + gpt-oss-120b fallback): checks ~1 s, upload+extract ~2 s. Production was down about 5 min at 11:30 because I deployed a half-merged tree (fixed; deploys now gated on tests).
+- 11:10: Added #10–#15 (Cursor rules, model-down errors, subtitles, Gemini, learned rules, Vidit's review fixes). Learned-rules panel live. Integration dry-run clean. Dogfood found real decisions from our own session.
 - 10:55: Merged Vidit's #9 (labelled keyword fallback for typed checks) and redeployed. Handbook update: first-round eval 14:00–15:30, criteria published, live URL no longer required (we have one anyway). Primer PDF in docs/primer/.
 - 10:05: Critic pass added (checks 6/6). qwen3:8b comparison done. Live site deployed with seeded ledger and labelled fallback. Waiting on two Ojas-only actions (hosted model, ShipWright).
 - 09:27: `sthira demo` proves learning: precision 0.40 → 0.57 (run 1), and both agent contradictions in today's Claude Code session are caught. Web demo works locally. PR #1 is open (no ShipWright review yet, so the app may need installing by Ojas).

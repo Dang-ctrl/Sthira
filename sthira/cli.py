@@ -135,10 +135,30 @@ def correct(text: str, note: str):
 
 
 @app.command()
-def sync(path: str = typer.Argument("AGENTS.md")):
-    """Write settled context into AGENTS.md / CLAUDE.md for every coding agent."""
-    api.sync(path)
-    console.print(f"[green]Updated[/] {path}")
+def sync(path: Optional[str] = typer.Argument(None, help="Defaults to AGENTS.md, or .cursor/rules/sthira.mdc with --format cursor"),
+         fmt: str = typer.Option("agents", "--format", "-f", help="agents (AGENTS.md / CLAUDE.md block) | cursor (Cursor rule)")):
+    """Write settled context where coding agents read it: AGENTS.md / CLAUDE.md, or a Cursor rule."""
+    if fmt not in ("agents", "cursor"):
+        raise typer.BadParameter("format must be 'agents' or 'cursor'")
+    api.sync(path, fmt=fmt)
+    console.print(f"[green]Updated[/] {path or ('.cursor/rules/sthira.mdc' if fmt == 'cursor' else 'AGENTS.md')}")
+
+
+@app.command()
+def rules():
+    """Show what Sthira has learned from your corrections (applied to every future extraction and check)."""
+    learned = api.learned_rules()
+    if not learned:
+        console.print("Nothing learned yet. Reject a bad extraction with a reason, or correct a check verdict.")
+        return
+    t = Table(title="Learned from you", expand=True)
+    t.add_column("applies to", no_wrap=True)
+    t.add_column("rule", ratio=3)
+    t.add_column("from", ratio=2)
+    t.add_column("times", justify="right")
+    for r in learned:
+        t.add_row(r["applies_to"], r["rule"], r["example"][:80], str(r["examples"]))
+    console.print(t)
 
 
 @app.command()
