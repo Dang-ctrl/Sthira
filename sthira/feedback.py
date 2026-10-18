@@ -72,3 +72,26 @@ def stats(con: sqlite3.Connection) -> dict:
         "precision_after": precision(1),
         "entries": counts,
     }
+
+
+def learned_rules(con: sqlite3.Connection) -> list[dict]:
+    """Everything Sthira has learned from the user, newest first: the rules it now applies on every run."""
+    rows = con.execute(
+        """SELECT f.target, f.action, f.note, f.snippet, f.created_at, e.statement FROM feedback f
+           LEFT JOIN entries e ON e.id = f.entry_id
+           WHERE (f.target = 'extraction' AND f.action = 'reject' AND f.note IS NOT NULL AND f.note != '')
+              OR f.target = 'check'
+           ORDER BY f.created_at DESC, f.rowid DESC"""
+    ).fetchall()
+    out, seen = [], {}
+    for r in rows:
+        key = (r["target"], r["note"])
+        if key in seen:
+            seen[key]["examples"] += 1
+            continue
+        item = {"applies_to": "extraction" if r["target"] == "extraction" else "contradiction checks",
+                "rule": r["note"], "example": r["statement"] or r["snippet"] or "", "learned_at": r["created_at"],
+                "examples": 1}
+        seen[key] = item
+        out.append(item)
+    return out
