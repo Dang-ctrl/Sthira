@@ -8,245 +8,42 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Noto+Serif+Devanagari:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
+<link rel="stylesheet" href="/static/app.css?v=4">
 <script>
   // Apply a saved theme before first paint.
   try { const t = localStorage.getItem("sthira-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 </script>
-<style>
-:root{
-  --paper:#f4f0e8; --surface:#faf7f1; --raised:#fffdf9; --ink:#1b1915; --ink-2:#47423a; --muted:#7a7266;
-  --line:#e2dacb; --line-2:#d3c9b6;
-  --accent:#b4441b; --accent-soft:#f5e2d6; --accent-line:#e7b9a3;
-  --ok:#2f6b45; --ok-soft:#e1eee4; --warn:#8a6100; --warn-soft:#f5ebcf;
-  --shadow:0 1px 0 rgba(27,25,21,.04),0 12px 32px -12px rgba(60,40,10,.14);
-  --serif:"Instrument Serif",Georgia,serif; --sans:Geist,system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --paper:#11100e; --surface:#181613; --raised:#1f1c18; --ink:#f0ebe2; --ink-2:#cbc3b6; --muted:#958c7f;
-    --line:#2b2722; --line-2:#3a342d;
-    --accent:#ee8a5e; --accent-soft:#341d13; --accent-line:#6b3520;
-    --ok:#88c89d; --ok-soft:#15251a; --warn:#e3bf64; --warn-soft:#2b2310;
-    --shadow:0 1px 0 rgba(0,0,0,.3),0 16px 40px -16px rgba(0,0,0,.6);
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#11100e; --surface:#181613; --raised:#1f1c18; --ink:#f0ebe2; --ink-2:#cbc3b6; --muted:#958c7f;
-  --line:#2b2722; --line-2:#3a342d;
-  --accent:#ee8a5e; --accent-soft:#341d13; --accent-line:#6b3520;
-  --ok:#88c89d; --ok-soft:#15251a; --warn:#e3bf64; --warn-soft:#2b2310;
-  --shadow:0 1px 0 rgba(0,0,0,.3),0 16px 40px -16px rgba(0,0,0,.6);
-  color-scheme:dark;
-}
-
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-[x-cloak]{display:none!important}
-a{color:inherit}
-button,input,textarea{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
-.ic{display:inline-block;vertical-align:-.15em;flex:none}
-.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
-@media (max-width:600px){.wrap{padding:0 16px}}
-.mono{font-family:var(--mono);font-size:12px;letter-spacing:.01em}
-.muted{color:var(--muted)}
-
-/* ---------- top bar ---------- */
-.bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
-.bar .wrap{display:flex;align-items:center;gap:14px;height:58px}
-.mark{display:flex;align-items:baseline;gap:9px;text-decoration:none}
-.mark .deva{font-family:"Noto Serif Devanagari",serif;font-size:24px;color:var(--accent);line-height:1}
-.mark .name{font-family:var(--serif);font-size:26px;line-height:1}
-.bar .spacer{flex:1}
-.pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink-2);font-size:12.5px;white-space:nowrap}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent)}
-.iconbtn{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;text-decoration:none}
-.iconbtn:hover{border-color:var(--line-2);color:var(--ink)}
-@media (max-width:600px){.pill.model{display:none}}
-
-/* ---------- hero ---------- */
-.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:44px;padding:44px 0 28px;align-items:start}
-@media (max-width:980px){.hero{grid-template-columns:minmax(0,1fr);gap:22px;padding:28px 0 18px}}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
-.eyebrow::before{content:"";width:18px;height:1px;background:var(--accent)}
-h1{font-family:var(--serif);font-weight:400;font-size:clamp(40px,5.4vw,66px);line-height:.98;letter-spacing:-.015em;margin:14px 0 16px}
-h1 em{color:var(--accent);font-style:italic}
-.lede{font-size:16.5px;color:var(--ink-2);max-width:34em;margin:0 0 22px}
-.steps{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
-.steps .n{font-family:var(--mono);font-size:11.5px;color:var(--accent);padding-top:3px}
-.steps b{font-weight:500}
-.steps span{color:var(--muted);font-size:13.5px}
-@media (max-width:980px){.steps{display:none}}
-
-/* ---------- console (check) ---------- */
-.panel{background:var(--raised);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
-.console{padding:18px}
-.console-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
-.console-head h2{font-family:var(--serif);font-weight:400;font-size:26px;margin:0;line-height:1.1}
-.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:1px 5px;color:var(--muted)}
-.field{position:relative;border:1px solid var(--line-2);border-radius:12px;background:var(--surface);transition:border-color .15s,box-shadow .15s}
-.field:focus-within{border-color:var(--ink-2);box-shadow:0 0 0 4px color-mix(in srgb,var(--ink) 7%,transparent)}
-.field textarea{display:block;width:100%;min-height:104px;resize:vertical;border:0;background:transparent;padding:14px 14px 50px;outline:none;font-size:15.5px;line-height:1.5}
-.field textarea::placeholder{color:var(--muted)}
-.field .run{position:absolute;right:10px;bottom:10px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 15px;border-radius:10px;border:1px solid transparent;font-weight:500;font-size:14px;cursor:pointer;white-space:nowrap;transition:transform .08s,background .15s,border-color .15s,opacity .15s}
-.btn:active{transform:translateY(1px)}
-.btn:disabled{opacity:.55;cursor:progress}
-.btn-ink{background:var(--ink);color:var(--paper)}
-.btn-ink:hover{background:color-mix(in srgb,var(--ink) 86%,var(--accent))}
-.btn-line{background:var(--raised);border-color:var(--line-2);color:var(--ink)}
-.btn-line:hover{border-color:var(--ink-2)}
-.btn-ghost{background:transparent;color:var(--ink-2);border-color:transparent}
-.btn-ghost:hover{background:var(--surface);border-color:var(--line)}
-.btn-sm{height:32px;padding:0 11px;font-size:13px;border-radius:8px}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;align-items:center}
-.chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:13px;cursor:pointer;transition:border-color .15s,color .15s,background .15s}
-.chip:hover{border-color:var(--accent-line);color:var(--accent);background:var(--accent-soft)}
-.chip .t{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.chips-label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:2px}
-
-/* ---------- verdict ---------- */
-.verdict{margin-top:16px;border-radius:13px;border:1px solid var(--line);overflow:hidden}
-.verdict-head{display:flex;align-items:center;gap:10px;padding:12px 14px;font-weight:500}
-.verdict.bad{border-color:var(--accent-line)}
-.verdict.bad .verdict-head{background:var(--accent-soft);color:var(--accent)}
-.verdict.ok .verdict-head{background:var(--ok-soft);color:var(--ok)}
-.verdict.warn{border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
-.verdict.warn .verdict-head{background:var(--warn-soft);color:var(--warn)}
-.verdict-body{padding:4px 14px 14px;background:var(--raised)}
-.verdict-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-top:1px solid var(--line);background:var(--surface)}
-.conflict{padding:14px 0;border-bottom:1px dashed var(--line-2)}
-.conflict:last-child{border-bottom:0}
-.conflict .stmt{font-weight:500;font-size:15.5px;margin:0 0 8px}
-.cite{position:relative;margin:0;padding:2px 0 2px 16px;border-left:2px solid var(--accent)}
-.cite q{display:block;font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.35;quotes:"\201C" "\201D"}
-.cite figcaption{margin-top:6px;color:var(--muted)}
-.explain{margin:10px 0 0;color:var(--ink-2)}
-.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
-.inline-form{margin-top:12px;display:grid;gap:8px}
-.inline-form input{height:38px;border:1px solid var(--line-2);border-radius:9px;padding:0 12px;background:var(--surface);outline:none}
-.inline-form input:focus{border-color:var(--ink-2)}
-.inline-form .row{display:flex;gap:7px;flex-wrap:wrap}
-.note{display:flex;align-items:flex-start;gap:8px;margin-top:10px;font-size:13.5px;color:var(--ink-2)}
-pre.cmd{margin:10px 0 0;font:12.5px/1.5 var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 12px;white-space:pre-wrap;word-break:break-word}
-.checking{display:flex;align-items:center;gap:10px;margin-top:16px;color:var(--muted);font-size:14px}
-.spin{animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ---------- main grid ---------- */
-.main{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:22px;padding:6px 0 40px;align-items:start}
-@media (max-width:980px){.main{grid-template-columns:minmax(0,1fr)}}
-.side{display:grid;gap:22px}
-@media (min-width:981px){.side{position:sticky;top:78px}}
-.sec{padding:18px}
-.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:4px}
-.sec h2{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.1;margin:0}
-.sec .sub{color:var(--muted);font-size:13.5px;margin:4px 0 14px}
-
-/* ---------- ledger ---------- */
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:6px}
-.seg{display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow-x:auto;max-width:100%}
-.seg{scrollbar-width:none}.seg::-webkit-scrollbar{display:none}
-.seg button{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border:0;border-radius:7px;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
-.seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 0 1px var(--line)}
-.seg .c{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.search{position:relative;flex:1;min-width:160px;max-width:260px}
-.search input{width:100%;height:36px;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:0 10px 0 32px;outline:none;font-size:13.5px}
-.search input:focus{border-color:var(--ink-2)}
-.search .ic{position:absolute;left:10px;top:10px;color:var(--muted)}
-@media (max-width:600px){.search{max-width:none}}
-.rows{border-top:1px solid var(--line)}
-.entry{display:grid;grid-template-columns:86px minmax(0,1fr);gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
-.entry.dim{opacity:.6}
-@media (max-width:600px){.entry{grid-template-columns:1fr;gap:6px}}
-.entry .when{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:3px;line-height:1.4}
-.entry .when b{display:block;font-weight:500;color:var(--ink-2);font-size:12.5px}
-@media (max-width:600px){.entry .when b{display:inline;margin-right:6px}}
-.tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:5px}
-.tag{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;padding:2px 7px;border-radius:5px;border:1px solid var(--line);color:var(--ink-2)}
-.tag.kind{border-color:transparent;padding-left:0;color:var(--accent)}
-.tag.settled{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,transparent);background:var(--ok-soft)}
-.tag.proposed{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,transparent);background:var(--warn-soft)}
-.tag.rejected{color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
-.tag.superseded{color:var(--muted)}
-.entry h3{margin:0 0 4px;font-size:15.5px;font-weight:500;line-height:1.4}
-.entry .why{margin:0 0 8px;color:var(--ink-2);font-size:13.5px}
-.entry .why b{font-weight:500;color:var(--muted);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.07em;margin-right:6px}
-.entry .cite q{font-size:17px}
-.alts{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.alt{font-size:12px;padding:1px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--muted);text-decoration:line-through;text-decoration-color:var(--accent)}
-.empty{padding:28px 0;text-align:center;color:var(--muted)}
-
-/* ---------- learning ---------- */
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface)}
-.stat .n{font-family:var(--serif);font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
-.stat .l{font-size:12.5px;color:var(--muted);margin-top:4px}
-.prec{grid-column:1/-1}
-.prec .nums{display:flex;align-items:baseline;gap:10px;font-family:var(--serif);font-size:38px;line-height:1}
-.prec .nums .to{color:var(--ok)}
-.prec .nums .arrow{font-family:var(--sans);font-size:18px;color:var(--muted)}
-.bars{display:grid;gap:6px;margin-top:12px}
-.bar-row{display:grid;grid-template-columns:52px 1fr 38px;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
-.track{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
-.fill{height:100%;border-radius:99px;background:var(--line-2);width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
-.fill.after{background:var(--ok)}
-.rule{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;background:var(--surface)}
-.rule .top{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px}
-.rule p{margin:0;font-size:14px}
-.rule .eg{margin-top:6px;color:var(--muted);font-size:12.5px}
-.subhead{display:flex;align-items:center;gap:8px;margin:18px 0 2px;font-family:var(--serif);font-size:20px}
-
-/* ---------- import ---------- */
-.drop{display:grid;place-items:center;gap:6px;text-align:center;padding:22px 14px;border:1.5px dashed var(--line-2);border-radius:12px;background:var(--surface);cursor:pointer;transition:border-color .15s,background .15s}
-.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
-.drop b{font-weight:500}
-.drop small{color:var(--muted)}
-.upmsg{margin-top:10px;font-size:13.5px}
-.upmsg.err{color:var(--accent)}
-
-/* ---------- agents block ---------- */
-.codebox{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
-.codebox pre{margin:0;padding:14px;font:12px/1.55 var(--mono);white-space:pre-wrap;word-break:break-word;color:var(--ink-2)}
-.codebox.clamp pre{max-height:220px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
-.codebox .copy{position:absolute;top:8px;right:8px}
-.more{margin-top:8px}
-
-/* ---------- toasts ---------- */
-.toasts{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:grid;gap:8px;z-index:50;width:min(420px,calc(100vw - 32px))}
-.toast{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;background:var(--ink);color:var(--paper);font-size:14px;box-shadow:0 12px 32px -8px rgba(0,0,0,.35)}
-.toast.err{background:var(--accent);color:#fff}
-
-footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--muted);font-size:13px}
-footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between}
-footer a{color:var(--ink-2)}
-
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
 </head>
-<body x-data="app()" x-init="init()">
+<body x-data="app()">
 
 <header class="bar">
   <div class="wrap">
     <a class="mark" href="/" aria-label="Sthira home"><span class="deva">स्थिर</span><span class="name">Sthira</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#console">Check</a><a href="#simulate">Live agent</a><a href="#ledger">Ledger</a><a href="#evidence">Evidence</a><a href="#install">Install</a>
+    </nav>
     <span class="spacer"></span>
+    <button class="kbtn" @click="openPalette()" aria-label="Search and commands">
+      <span x-html="ic('Search', 15)"></span><span class="lbl">Search or jump</span><span class="kbd">Ctrl K</span>
+    </button>
     <span class="pill model" title="Open-weight model answering checks"><span class="dot" aria-hidden="true"></span><span x-text="meta.model || '…'"></span></span>
-    <span class="pill model">open-weight · MIT</span>
     <a class="iconbtn" href="https://github.com/HelloOjasMutreja/Sthira" target="_blank" rel="noopener" aria-label="Source on GitHub" x-html="ic('Github', 17)"></a>
     <button class="iconbtn" @click="toggleTheme()" :aria-label="dark ? 'Switch to light theme' : 'Switch to dark theme'" x-html="ic(dark ? 'Sun' : 'Moon', 17)"></button>
   </div>
 </header>
 
 <main class="wrap">
+  <!-- ======================= hero + check ======================= -->
   <section class="hero">
     <div>
       <span class="eyebrow">Memory for what you decided with AI</span>
       <h1>Your AI forgets what you decided. <em>Sthira doesn’t.</em></h1>
       <p class="lede">It reads your ChatGPT, Claude and Claude Code history and meeting notes, keeps every decision with the exact words you used, and warns when new work goes against one.</p>
+      <div class="ctas">
+        <button class="btn btn-ink" @click="tour()"><span x-html="ic('Compass', 16)"></span>Take the 60-second tour</button>
+        <a class="btn btn-line" href="#simulate" @click="setTimeout(() => simulate(), 350)"><span x-html="ic('Bot', 16)"></span>Watch an agent get caught</a>
+      </div>
       <ol class="steps">
         <li><span class="n">01</span><div><b>Reads your AI history.</b> <span>Exports, coding sessions, transcripts.</span></div></li>
         <li><span class="n">02</span><div><b>Keeps what you settled.</b> <span>With the reason and a verbatim quote. Nothing deleted, only superseded.</span></div></li>
@@ -255,13 +52,13 @@ footer a{color:var(--ink-2)}
       </ol>
     </div>
 
-    <div class="panel console">
+    <div class="panel console" id="console">
       <div class="console-head">
         <h2>Check new work</h2>
-        <span class="mono muted"><span class="kbd">Ctrl</span> <span class="kbd">↵</span></span>
+        <span class="mono muted"><span class="kbd">/</span> to focus · <span class="kbd">Ctrl ↵</span> to run</span>
       </div>
       <div class="field">
-        <label for="text" class="mono muted" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">What is about to happen?</label>
+        <label for="text" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">What is about to happen?</label>
         <textarea id="text" x-model="text" @keydown.ctrl.enter="run()" @keydown.meta.enter="run()"
           placeholder="Paste what an AI agent is about to do, or a plan of your own…"></textarea>
         <button class="btn btn-ink run" @click="run()" :disabled="checking || !text.trim()">
@@ -282,6 +79,15 @@ footer a{color:var(--ink-2)}
         <span x-html="ic('LoaderCircle', 16, 'spin')"></span> Checking against your settled decisions with the open-weight model…
       </div>
 
+      <!-- before → after, after a correction -->
+      <template x-if="prevVerdict && verdict && !checking">
+        <div class="compare" aria-label="Verdict before and after your correction">
+          <div class="side-v" :class="prevVerdict.verdict === 'contradicts' ? 'bad' : 'ok'"><div class="lab">Before your correction</div><div class="val" x-text="label(prevVerdict)"></div></div>
+          <div class="arrow" x-html="ic('ArrowRight', 18)"></div>
+          <div class="side-v" :class="verdict.verdict === 'contradicts' ? 'bad' : 'ok'"><div class="lab">After: it learned</div><div class="val" x-text="label(verdict)"></div></div>
+        </div>
+      </template>
+
       <!-- contradiction -->
       <template x-if="verdict && verdict.verdict === 'contradicts' && !checking">
         <div class="verdict bad">
@@ -298,10 +104,10 @@ footer a{color:var(--ink-2)}
                   <figcaption class="mono" x-text="source(c.entry)"></figcaption>
                 </figure>
                 <p class="explain" x-text="c.explanation"></p>
-
                 <div class="actions" x-show="!c.mode">
                   <button class="btn btn-line btn-sm" @click="c.mode = 'kept'"><span x-html="ic('ShieldCheck', 15)"></span>Keep this decision</button>
                   <button class="btn btn-ghost btn-sm" @click="c.mode = 'replace'; setTimeout(() => $el.closest('.conflict').querySelector('input').focus(), 40)"><span x-html="ic('GitBranch', 15)"></span>I’ve changed my mind</button>
+                  <button class="btn btn-ghost btn-sm" @click="openDrawer(c.entry)"><span x-html="ic('BookOpen', 15)"></span>Open source</button>
                 </div>
                 <p class="note" x-show="c.mode === 'kept'" x-cloak><span x-html="ic('Check', 15)"></span>Kept. Tell your agent to follow the settled decision.</p>
                 <form class="inline-form" x-show="c.mode === 'replace'" x-cloak @submit.prevent="replace(c)">
@@ -318,6 +124,7 @@ footer a{color:var(--ink-2)}
           <div class="verdict-foot">
             <span class="mono muted" x-text="footnote(verdict)"></span>
             <button class="btn btn-ghost btn-sm" x-show="!teach.open && !teach.done" @click="teach.open = true; setTimeout(() => $refs.teachNote.focus(), 40)"><span x-html="ic('GraduationCap', 15)"></span>Not a conflict? Teach Sthira</button>
+            <button class="btn btn-ink btn-sm" x-show="teach.done" @click="run({compare: true})"><span x-html="ic('RotateCcw', 15)"></span>Re-check with what it learned</button>
           </div>
           <form class="inline-form" style="padding:0 14px 14px;background:var(--surface)" x-show="teach.open" x-cloak @submit.prevent="sendTeach()">
             <input x-ref="teachNote" x-model="teach.note" placeholder="What should Sthira learn? e.g. caching layers are fine, only the primary store matters" maxlength="500">
@@ -336,7 +143,7 @@ footer a{color:var(--ink-2)}
             <span x-html="ic('CircleCheck', 18)"></span>
             <span x-text="verdict.verdict === 'unrelated' ? 'No related decisions. Go ahead.' : 'Consistent with what you’ve settled.'"></span>
           </div>
-          <div class="verdict-foot"><span class="mono muted" x-text="'Checked by ' + verdict.model"></span></div>
+          <div class="verdict-foot"><span class="mono muted" x-text="'Checked by ' + verdict.model + (verdict.cached ? ' · cached' : '')"></span></div>
         </div>
       </template>
 
@@ -359,11 +166,65 @@ footer a{color:var(--ink-2)}
     </div>
   </section>
 
-  <section class="main">
-    <!-- ledger -->
-    <div class="panel sec">
+  <!-- ======================= live agent simulation ======================= -->
+  <section class="block" id="simulate">
+    <div class="block-head">
+      <div><span class="eyebrow">Live</span><h2>Watch it catch an agent</h2>
+        <p>A real Claude Code session from the demo project. The agent drifts from two settled decisions; Sthira checks every proposal as it’s made.</p></div>
+      <button class="btn btn-ink" @click="simulate()" :disabled="sim.running">
+        <span x-html="ic(sim.running ? 'LoaderCircle' : (sim.done ? 'RotateCcw' : 'Play'), 16, sim.running ? 'spin' : '')"></span>
+        <span x-text="sim.running ? 'Running…' : (sim.done ? 'Replay session' : 'Run the session')"></span>
+      </button>
+    </div>
+    <div class="panel sim">
+      <div class="term-bar">
+        <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="title" x-text="'claude code · ' + (sim.title || 'acme-notes')"></span>
+        <span class="watch" :class="{on: sim.running}"><span class="dot"></span><span x-text="sim.running ? 'Sthira is watching' : 'Sthira idle'"></span></span>
+      </div>
+      <div class="term" x-ref="term" aria-live="polite">
+        <p class="idle" x-show="!sim.log.length">Press <b>Run the session</b> to replay it. Checks use the same open-weight model as above.</p>
+        <template x-for="(m, i) in sim.log" :key="i">
+          <div>
+            <div class="msg" :class="m.role">
+              <span class="who" x-text="m.role === 'user' ? 'you' : 'agent'"></span>
+              <span class="txt"><span x-text="m.shown"></span><span class="caret" x-show="m.typing"></span></span>
+            </div>
+            <template x-if="m.check">
+              <div class="interject" :class="{ok: m.check.state === 'ok', pending: m.check.state === 'pending' || m.check.state === 'error'}">
+                <div class="h">
+                  <span x-html="ic(m.check.state === 'pending' ? 'LoaderCircle' : (m.check.state === 'bad' ? 'TriangleAlert' : (m.check.state === 'ok' ? 'CircleCheck' : 'Info')), 16, m.check.state === 'pending' ? 'spin' : '')"></span>
+                  <span x-text="m.check.state === 'pending' ? 'Sthira is checking this against your decisions…' : (m.check.state === 'bad' ? 'Sthira: stop, this goes against a settled decision' : (m.check.state === 'ok' ? 'Sthira: consistent with what you settled' : m.check.msg))"></span>
+                </div>
+                <template x-if="m.check.state === 'bad'">
+                  <div>
+                    <template x-for="c in m.check.v.conflicts" :key="c.entry.id">
+                      <div>
+                        <figure class="cite"><q x-text="c.entry.source.quote"></q><figcaption class="mono" x-text="source(c.entry)"></figcaption></figure>
+                        <p class="explain" x-text="c.explanation"></p>
+                      </div>
+                    </template>
+                    <p class="mono muted" style="margin:8px 0 0" x-show="m.check.v.fallback" x-text="footnote(m.check.v)"></p>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+      <div class="sim-foot">
+        <span class="score" x-show="sim.checked" x-text="`${sim.checked} proposal${sim.checked === 1 ? '' : 's'} checked`"></span>
+        <span class="score" x-show="sim.done"><b x-text="`${sim.caught} of ${sim.checked}`"></b> drifts caught, each with its source</span>
+        <span class="score" x-show="!sim.checked">In real use the watcher and the Claude Code hook do this in the background.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= ledger + side ======================= -->
+  <section class="main block">
+    <div class="panel sec" id="ledger">
       <div class="sec-head"><h2>Your ledger</h2><span class="mono muted" x-text="`${entries.length} entries`"></span></div>
-      <p class="sub">Everything Sthira extracted, each with its source. Settle what’s right; reject what isn’t, which is how it learns.</p>
+      <p class="sub">Everything Sthira extracted, each with its source. Click an entry to read it in context. Settle what’s right; reject what isn’t, which is how it learns.</p>
       <div class="toolbar">
         <div class="seg" role="group" aria-label="Filter by status">
           <template x-for="t in tabs" :key="t.key">
@@ -383,8 +244,11 @@ footer a{color:var(--ink-2)}
               <div class="tags">
                 <span class="tag kind" x-text="e.kind.replace('_', ' ')"></span>
                 <span class="tag" :class="e.status" x-text="e.status"></span>
+                <span class="tag quarantined" x-show="e.trust === 'quarantined' && e.status === 'proposed'" title="Extracted automatically; agents ignore it until you confirm">quarantined</span>
               </div>
-              <h3 x-text="e.statement"></h3>
+              <button class="open" @click="openDrawer(e)" :aria-label="'Open details: ' + e.statement">
+                <h3 x-text="e.statement"></h3>
+              </button>
               <p class="why" x-show="showWhy(e)"><b>Why</b><span x-text="e.rationale"></span></p>
               <figure class="cite">
                 <q x-text="e.source.quote"></q>
@@ -417,8 +281,7 @@ footer a{color:var(--ink-2)}
     </div>
 
     <aside class="side">
-      <!-- learning -->
-      <div class="panel sec">
+      <div class="panel sec" id="learning">
         <div class="sec-head"><h2>It learns</h2></div>
         <p class="sub">Every settle, reject and correction feeds the next run.</p>
         <div class="stats">
@@ -447,32 +310,122 @@ footer a{color:var(--ink-2)}
         </template>
       </div>
 
-      <!-- import -->
+      <div class="panel sec">
+        <div class="sec-head"><h2>Insights</h2></div>
+        <p class="sub">Where your decisions come from, and when you made them.</p>
+        <div class="charts">
+          <div class="chart-card"><div class="lab">By source</div><div class="chart-wrap"><canvas id="chart-src" aria-label="Entries by source"></canvas></div></div>
+          <div class="chart-card"><div class="lab">Decided, by month</div><div class="chart-wrap"><canvas id="chart-time" aria-label="Entries by month decided"></canvas></div></div>
+        </div>
+      </div>
+
+      <div class="panel sec">
+        <div class="sec-head"><h2>Activity</h2><span class="mono muted">newest first</span></div>
+        <ul class="feed">
+          <template x-for="(ev, i) in history" :key="i">
+            <li>
+              <span class="fi" :class="ev.type" x-html="ic(feedIcon(ev.type), 14)"></span>
+              <div><div class="t" x-text="feedText(ev)"></div><div class="m" x-text="ago(ev.at)"></div></div>
+            </li>
+          </template>
+          <li x-show="!history.length"><span></span><div class="m">No activity yet.</div></li>
+        </ul>
+      </div>
+
       <div class="panel sec">
         <div class="sec-head"><h2>Bring your history</h2></div>
         <p class="sub">A ChatGPT or Claude <span class="mono">conversations.json</span>, a Claude Code <span class="mono">.jsonl</span>, or a transcript. The hosted demo reads up to 3 conversations; run locally with Ollama for everything.</p>
         <label class="drop" :class="{over: dragging}" @dragover.prevent="dragging = true" @dragleave="dragging = false" @drop.prevent="dragging = false; upload($event.dataTransfer.files[0])">
           <span x-html="ic(uploading ? 'LoaderCircle' : 'FileUp', 22, uploading ? 'spin' : '')"></span>
           <b x-text="uploading ? 'Importing and extracting…' : 'Drop a file, or click to choose'"></b>
-          <small>.json · .jsonl · .md · .txt · .zip, up to 4 MB</small>
+          <small>.json · .jsonl · .md · .txt · .vtt · .srt · .zip, up to 4 MB</small>
           <input type="file" accept=".json,.jsonl,.md,.txt,.zip,.vtt,.srt" style="display:none" @change="upload($event.target.files[0]); $event.target.value = ''" :disabled="uploading">
         </label>
         <p class="upmsg" :class="{err: uploadErr}" x-show="uploadMsg" x-text="uploadMsg"></p>
       </div>
+    </aside>
+  </section>
 
-      <!-- agents -->
+  <!-- ======================= evidence ======================= -->
+  <section class="block" id="evidence">
+    <div class="block-head">
+      <div><span class="eyebrow">Evidence</span><h2>Does it actually work?</h2>
+        <p>Small, honest numbers from a scenario anyone can rerun with <span class="mono">uv run sthira demo</span>. Full method and limits in <a href="https://github.com/HelloOjasMutreja/Sthira/blob/main/eval/README.md" target="_blank" rel="noopener">eval/README.md</a>.</p></div>
+    </div>
+    <div class="evid" x-show="evalData">
+      <div class="panel">
+        <h3>It learns from corrections</h3>
+        <p class="sub">Extraction precision on unseen chats, qwen3:4b</p>
+        <div class="big"><span x-text="pct(evalData?.extraction[0].before)"></span><span class="arrow">→</span><span class="to" x-text="pct(evalData?.extraction[0].after)"></span></div>
+        <table class="mini">
+          <thead><tr><th>Model</th><th>Before</th><th>After</th><th>Recall</th></tr></thead>
+          <tbody>
+            <template x-for="r in evalData?.extraction || []" :key="r.model + r.note">
+              <tr><td><span x-text="r.model"></span><br><span class="muted" style="font-size:12px" x-text="r.note"></span></td>
+                <td class="num" x-text="pct(r.before)"></td><td class="num" x-text="pct(r.after)"></td><td class="num" x-text="pct(r.recall)"></td></tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h3>It corrects its own mistakes</h3>
+        <p class="sub">Contradiction checks: 3 real conflicts, 3 traps</p>
+        <div class="pipe">
+          <template x-for="(c, i) in evalData?.checks || []" :key="c.pipeline">
+            <div class="row" :class="{win: c.correct === c.total}">
+              <div><b x-text="c.pipeline"></b><small x-text="c.note + ' · ' + c.latency"></small></div>
+              <div class="num" x-text="`${c.correct}/${c.total}`"></div>
+            </div>
+          </template>
+        </div>
+        <p class="limits">A second “critic” pass re-examines every claimed conflict and drops false alarms, like adding a cache in front of the chosen database.</p>
+      </div>
+      <div class="panel">
+        <h3>We ran it on ourselves</h3>
+        <p class="sub" x-text="evalData ? `Today’s build session: ${evalData.dogfood.messages} messages → ${evalData.dogfood.entries} entries (${evalData.dogfood.model})` : ''"></p>
+        <p style="margin:0 0 4px;font-weight:500">Real decisions it found</p>
+        <ul class="dog"><template x-for="d in evalData?.dogfood.right || []" :key="d"><li x-text="d"></li></template></ul>
+        <p class="limits" x-text="evalData?.dogfood.wrong"></p>
+        <p class="limits" x-text="evalData?.limits"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= install ======================= -->
+  <section class="block" id="install">
+    <div class="block-head">
+      <div><span class="eyebrow">Use it today</span><h2>Works where you work</h2>
+        <p>Open source, MIT. Runs locally on an open-weight model; the ledger is a plain file you own.</p></div>
+    </div>
+    <div class="install">
+      <div class="panel sec">
+        <div class="tabs-x" role="tablist" aria-label="Install options">
+          <template x-for="(v, k) in installs" :key="k">
+            <button role="tab" :aria-selected="installTab === k" @click="installTab = k" x-text="v.label"></button>
+          </template>
+        </div>
+        <p class="sub" style="margin-top:0" x-text="installs[installTab].note"></p>
+        <div class="codebox">
+          <pre x-text="installs[installTab].code"></pre>
+          <button class="btn btn-line btn-sm copy" @click="copy(installs[installTab].code, 'install')"><span x-html="ic(copied === 'install' ? 'Check' : 'Copy', 14)"></span><span x-text="copied === 'install' ? 'Copied' : 'Copy'"></span></button>
+        </div>
+        <div class="exports">
+          <a class="btn btn-line btn-sm" href="/api/export?format=json" download><span x-html="ic('Download', 14)"></span>Ledger as JSON</a>
+          <a class="btn btn-line btn-sm" href="/api/export?format=md" download><span x-html="ic('Download', 14)"></span>Ledger as Markdown</a>
+        </div>
+      </div>
       <div class="panel sec">
         <div class="sec-head"><h2>Every agent sees it</h2></div>
-        <p class="sub"><span class="mono">sthira sync</span> writes this into <span class="mono">AGENTS.md</span> / <span class="mono">CLAUDE.md</span>. Over MCP, agents call <span class="mono">check</span> before acting.</p>
+        <p class="sub"><span class="mono">sthira sync</span> writes this into <span class="mono">AGENTS.md</span> / <span class="mono">CLAUDE.md</span>.</p>
         <div class="codebox" :class="{clamp: !agentsOpen}">
           <pre x-text="agents || '…'"></pre>
-          <button class="btn btn-line btn-sm copy" @click="copyAgents()"><span x-html="ic(copied ? 'Check' : 'Copy', 14)"></span><span x-text="copied ? 'Copied' : 'Copy'"></span></button>
+          <button class="btn btn-line btn-sm copy" @click="copy(agents, 'agents')"><span x-html="ic(copied === 'agents' ? 'Check' : 'Copy', 14)"></span><span x-text="copied === 'agents' ? 'Copied' : 'Copy'"></span></button>
         </div>
         <button class="btn btn-ghost btn-sm more" @click="agentsOpen = !agentsOpen" :aria-expanded="agentsOpen">
           <span x-html="ic(agentsOpen ? 'Minus' : 'Plus', 14)"></span><span x-text="agentsOpen ? 'Show less' : 'Show full block'"></span>
         </button>
       </div>
-    </aside>
+    </div>
   </section>
 </main>
 
@@ -483,216 +436,106 @@ footer a{color:var(--ink-2)}
   </div>
 </footer>
 
+<!-- ======================= entry drawer ======================= -->
+<template x-if="drawer">
+  <div>
+    <div class="scrim" @click="closeDrawer()"></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="Entry details">
+      <div class="drawer-head">
+        <div class="tags">
+          <span class="tag kind" x-text="drawer.kind.replace('_', ' ')"></span>
+          <span class="tag" :class="drawer.status" x-text="drawer.status"></span>
+          <span class="tag" :class="{quarantined: drawer.trust === 'quarantined'}" x-text="drawer.trust"></span>
+        </div>
+        <button class="iconbtn" @click="copy(citation(drawer), 'cite')" :aria-label="copied === 'cite' ? 'Citation copied' : 'Copy as citation'" x-html="ic(copied === 'cite' ? 'Check' : 'Copy', 16)"></button>
+        <button class="iconbtn" @click="closeDrawer()" aria-label="Close" x-html="ic('X', 16)"></button>
+      </div>
+      <div class="drawer-body">
+        <h3 x-text="drawer.statement"></h3>
+        <p class="why" x-show="drawer.rationale"><b>Why</b><span x-text="drawer.rationale"></span></p>
+        <figure class="cite"><q x-text="drawer.source.quote"></q><figcaption class="mono" x-text="source(drawer)"></figcaption></figure>
+        <div class="alts" x-show="drawer.alternatives_rejected?.length">
+          <template x-for="a in drawer.alternatives_rejected" :key="a"><span class="alt" x-text="a"></span></template>
+        </div>
+
+        <dl class="dl">
+          <dt>Source</dt><dd x-text="srcLabel(drawer.source.type) + ' · ' + drawer.source.title"></dd>
+          <dt>Locator</dt><dd class="mono" x-text="drawer.source.locator || '—'"></dd>
+          <dt>Decided</dt><dd x-text="fmtDate(drawer.decided_at)"></dd>
+          <dt>Recorded</dt><dd x-text="fmtDate(drawer.recorded_at)"></dd>
+          <dt>Confidence</dt><dd><div class="conf"><div class="track"><div class="fill" :style="`width:${(drawer.confidence || 0) * 100}%`"></div></div><span class="mono" x-text="pct(drawer.confidence)"></span></div></dd>
+          <dt>Trust</dt><dd x-text="drawer.trust === 'confirmed' ? 'Confirmed by a person. Agents respect it.' : 'Quarantined: extracted automatically, so agents ignore it until a person confirms it. This guards against planted “decisions”.'"></dd>
+        </dl>
+
+        <template x-if="drawer.status === 'proposed'">
+          <div class="actions" style="margin-top:0">
+            <button class="btn btn-ink btn-sm" @click="review(drawer, 'settle')"><span x-html="ic('Check', 15)"></span>Settle</button>
+            <button class="btn btn-line btn-sm" @click="review(drawer, 'reject')"><span x-html="ic('X', 15)"></span>Reject</button>
+          </div>
+        </template>
+
+        <div class="h4">In the original conversation</div>
+        <p class="muted" x-show="ctxLoading">Loading…</p>
+        <div class="ctx" x-show="!ctxLoading">
+          <template x-for="(m, i) in ctx?.messages || []" :key="i">
+            <div class="bubble" :class="{match: m.match}">
+              <div class="r" x-text="(m.role === 'user' ? 'You' : m.role === 'assistant' ? 'Assistant' : m.role) + (m.ts ? ' · ' + fmtDate(m.ts) : '') + (m.match ? ' · quoted' : '')"></div>
+              <div class="x" x-text="m.text"></div>
+            </div>
+          </template>
+          <p class="muted" x-show="!(ctx?.messages || []).length">The source message isn’t stored on this server.</p>
+        </div>
+
+        <div class="h4">History of this decision</div>
+        <ol class="timeline">
+          <template x-for="h in chain(drawer)" :key="h.id">
+            <li :class="{cur: h.id === drawer.id}">
+              <div class="d" x-text="fmtDate(h.decided_at) + ' · ' + h.status"></div>
+              <template x-if="h.id === drawer.id"><div x-text="h.statement"></div></template>
+              <template x-if="h.id !== drawer.id"><button @click="openDrawer(h)" x-text="h.statement"></button></template>
+            </li>
+          </template>
+        </ol>
+        <p class="muted" style="font-size:13px" x-show="chain(drawer).length === 1">No earlier or later versions. Change your mind from a check and the old decision stays here as history.</p>
+      </div>
+    </aside>
+  </div>
+</template>
+
+<!-- ======================= command palette ======================= -->
+<template x-if="palette.open">
+  <div>
+    <div class="scrim top" @click="closePalette()"></div>
+    <div class="palette" role="dialog" aria-modal="true" aria-label="Search and commands">
+      <div class="in"><span x-html="ic('Search', 17)"></span>
+        <input x-model="palette.q" @input="palette.i = 0" @keydown="paletteKey($event)" placeholder="Search decisions, run a check, jump to a section…" aria-label="Search commands"></div>
+      <ul role="listbox">
+        <template x-for="(c, i) in commands()" :key="c.g + c.label">
+          <li role="option" :aria-selected="i === palette.i" @mouseenter="palette.i = i" @click="runCommand(c)">
+            <span x-html="ic(c.icon, 16)"></span><span class="lbl" x-text="c.label"></span><span class="g" x-text="c.g"></span>
+          </li>
+        </template>
+      </ul>
+      <p class="none" x-show="!commands().length">Nothing matches.</p>
+      <div class="foot"><span>↑↓ move</span><span>↵ run</span><span>esc close</span></div>
+    </div>
+  </div>
+</template>
+
 <div class="toasts" aria-live="polite">
   <template x-for="t in toasts" :key="t.id">
     <div class="toast" :class="{err: t.err}" x-transition.opacity.duration.200ms>
-      <span x-html="ic(t.err ? 'Info' : 'Check', 16)"></span><span x-text="t.msg"></span>
+      <span x-html="ic(t.err ? 'Info' : 'Check', 16)"></span><span x-text="t.msg" style="flex:1"></span>
+      <template x-if="t.action"><button class="btn btn-line btn-sm" @click="dismiss(t.id); t.action.fn()" x-text="t.action.label"></button></template>
     </div>
   </template>
 </div>
 
-<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
-<script>
-const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-// Lucide icon as an SVG string, for use with x-html.
-function ic(name, size = 16, cls = "") {
-  if (!window.lucide || !lucide.icons[name]) return "";
-  const el = lucide.createElement(lucide.icons[name]);
-  el.setAttribute("width", size); el.setAttribute("height", size);
-  el.setAttribute("class", "ic " + cls); el.setAttribute("aria-hidden", "true");
-  return el.outerHTML;
-}
-
-async function j(url, opts) {
-  const r = await fetch(url, opts);
-  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
-  return r.json();
-}
-const postJSON = (url, body) => j(url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
-
-const squash = s => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-
-function app() {
-  return {
-    meta: {}, entries: [], stats: {}, rules: [], agents: "",
-    loading: true, filter: "settled", q: "",
-    text: "", checking: false, verdict: null, checkError: null,
-    teach: {open: false, note: "", busy: false, done: false},
-    rejecting: null, rejectNote: "",
-    uploading: false, uploadMsg: "", uploadErr: false, dragging: false,
-    agentsOpen: false, copied: false, toasts: [],
-    shown: {settled: 0, corrections: 0}, barsIn: false,
-    dark: false,
-    // The texts must stay exactly as recorded in demo/cached_checks.json (the offline fallback is keyed on them).
-    examples: [
-      {label: "MongoDB migration", hint: "conflict", text: "Migrate the user store from Postgres to MongoDB and denormalize memberships to avoid joins."},
-      {label: "Password login", hint: "conflict", text: "Add email + password login with a forgot-password reset flow."},
-      {label: "Mobile before web", hint: "conflict", text: "Set up the mobile app release pipeline now, before the web app is stable."},
-      {label: "Dark mode", hint: "unrelated", text: "Add a dark mode toggle to the settings page."},
-    ],
-    tabs: [{key: "settled", label: "Settled"}, {key: "proposed", label: "To review"}, {key: "superseded", label: "Superseded"}, {key: "rejected", label: "Rejected"}],
-
-    init() {
-      const t = document.documentElement.dataset.theme;
-      this.dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-      j("/api/meta").then(m => this.meta = m).catch(() => {});
-      this.load();
-    },
-
-    async load() {
-      try {
-        this.entries = await j("/api/entries");
-      } catch (e) { this.toast("Couldn’t load the ledger: " + e.message, true); }
-      this.loading = false;
-      this.animateRows();
-      this.loadStats();
-      j("/api/rules").then(r => this.rules = r).catch(() => {});
-      j("/api/agents-md").then(a => this.agents = a.markdown).catch(() => {});
-    },
-
-    async loadStats() {
-      try { this.stats = await j("/api/stats"); } catch (e) { return; }
-      const target = {settled: this.stats.entries?.settled ?? 0, corrections: this.stats.corrections ?? 0};
-      for (const k of Object.keys(target)) this.countTo(k, target[k]);
-      requestAnimationFrame(() => this.barsIn = true);
-    },
-
-    countTo(key, to) {
-      const from = this.shown[key] || 0;
-      if (reduceMotion || !window.Motion || from === to) { this.shown[key] = to; return; }
-      Motion.animate(from, to, {duration: .9, ease: [.2, .8, .2, 1], onUpdate: v => this.shown[key] = Math.round(v)});
-    },
-
-    animateRows() {
-      if (reduceMotion || !window.Motion) return;
-      this.$nextTick(() => {
-        const rows = this.$refs.rows?.querySelectorAll(".entry");
-        if (rows?.length) Motion.animate(rows, {opacity: [0, 1], transform: ["translateY(6px)", "translateY(0px)"]}, {duration: .28, delay: Motion.stagger(.035)});
-      });
-    },
-
-    setFilter(k) { this.filter = k; this.rejecting = null; this.animateRows(); },
-    count(k) { return this.entries.filter(e => e.status === k).length; },
-    visible() {
-      const q = squash(this.q);
-      return this.entries.filter(e => e.status === this.filter)
-        .filter(e => !q || squash([e.statement, e.rationale, e.source.quote, e.source.title, e.kind].join(" ")).includes(q))
-        .slice().reverse();
-    },
-
-    // Small models sometimes copy the quote or statement into the rationale; don't show it twice.
-    // Near-identical only: a real reason that is merely part of a longer quote stays visible.
-    showWhy(e) {
-      if (!e.rationale) return false;
-      const a = squash(e.rationale);
-      return ![e.statement, e.source.quote].some(o => {
-        const b = squash(o);
-        return a && b && (a.includes(b) || b.includes(a)) && Math.min(a.length, b.length) / Math.max(a.length, b.length) > .8;
-      });
-    },
-
-    async run() {
-      const text = this.text.trim();
-      if (!text || this.checking) return;
-      this.checking = true; this.verdict = null; this.checkError = null;
-      this.teach = {open: false, note: "", busy: false, done: false};
-      try {
-        const v = await postJSON("/api/check", {text});
-        v.conflicts = (v.conflicts || []).map(c => ({...c, mode: null, why: "", busy: false}));
-        v.text = text;
-        this.verdict = v;
-        this.$nextTick(() => {
-          const box = document.querySelector(".verdict");
-          if (box && window.Motion && !reduceMotion) Motion.animate(box, {opacity: [0, 1], transform: ["translateY(8px) scale(0.99)", "translateY(0px) scale(1)"]}, {duration: .35, ease: [.2, .8, .2, 1]});
-        });
-      } catch (e) {
-        this.checkError = {offline: /Model call failed/.test(e.message), msg: e.message, text};
-      }
-      this.checking = false;
-    },
-
-    footnote(v) {
-      if (v.fallback === "keyword") return "Hosted model offline: keyword match on alternatives you rejected, not a model verdict.";
-      if (v.fallback === "recorded") return "Recorded from a real local Qwen3 run (hosted model offline).";
-      return "Flagged, then double-checked by a self-correction pass · " + v.model;
-    },
-
-    async replace(c) {
-      c.busy = true;
-      try {
-        await postJSON(`/api/entries/${encodeURIComponent(c.entry.id)}/replace`, {statement: this.verdict.text, rationale: c.why});
-        c.mode = "replaced";
-        this.toast("Decision replaced. The old one is kept as history.");
-        this.load();
-      } catch (e) { this.toast("Couldn’t replace it: " + e.message, true); }
-      c.busy = false;
-    },
-
-    async sendTeach() {
-      this.teach.busy = true;
-      try {
-        await postJSON("/api/correct", {text: this.verdict.text, note: this.teach.note});
-        this.teach = {open: false, note: "", busy: false, done: true};
-        this.toast("Noted. Future checks will use this correction.");
-        this.loadStats();
-        j("/api/rules").then(r => this.rules = r).catch(() => {});
-      } catch (e) { this.teach.busy = false; this.toast("Couldn’t save the correction: " + e.message, true); }
-    },
-
-    async review(e, action, note = null) {
-      try {
-        await postJSON(`/api/entries/${encodeURIComponent(e.id)}/review`, {action, note: note || null});
-        this.rejecting = null;
-        this.toast(action === "settle" ? "Settled. Agents will now respect it." : "Rejected. Sthira will learn from it.");
-        this.load();
-      } catch (err) { this.toast("Couldn’t save that: " + err.message, true); }
-    },
-
-    async upload(file) {
-      if (!file || this.uploading) return;
-      this.uploading = true; this.uploadErr = false; this.uploadMsg = "";
-      const fd = new FormData(); fd.append("file", file);
-      try {
-        const out = await j("/api/import", {method: "POST", body: fd});
-        this.uploadMsg = `${out.messages} messages in · ${out.entries.length} new entries to review.`;
-        this.filter = "proposed";
-        this.load();
-      } catch (e) {
-        this.uploadErr = true;
-        this.uploadMsg = /Model call failed/.test(e.message)
-          ? "The hosted model is busy or offline, so extraction can’t run right now. Run Sthira locally with Ollama to import your history."
-          : e.message;
-      }
-      this.uploading = false;
-    },
-
-    async copyAgents() {
-      try { await navigator.clipboard.writeText(this.agents); this.copied = true; setTimeout(() => this.copied = false, 1600); }
-      catch (e) { this.toast("Couldn’t copy. Select the text instead.", true); }
-    },
-
-    toggleTheme() {
-      this.dark = !this.dark;
-      const t = this.dark ? "dark" : "light";
-      document.documentElement.dataset.theme = t;
-      try { localStorage.setItem("sthira-theme", t); } catch (e) {}
-    },
-
-    toast(msg, err = false) {
-      const id = Math.random();
-      this.toasts.push({id, msg, err});
-      setTimeout(() => this.toasts = this.toasts.filter(t => t.id !== id), 3200);
-    },
-
-    pct: x => x == null ? "–" : Math.round(x * 100) + "%",
-    fmtDate: s => s ? new Date(s).toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"}) : "undated",
-    srcLabel: t => ({chatgpt: "ChatGPT", claude_ai: "Claude", claude_code: "Claude Code", transcript: "Meeting", gemini: "Gemini", manual: "Sthira"})[t] || t,
-    source(e) { return [this.srcLabel(e.source.type), e.source.title, (e.decided_at || "").slice(0, 10)].filter(Boolean).join(" · "); },
-  };
-}
-</script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js" crossorigin="anonymous"></script>
+<script src="/static/app.js?v=4"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

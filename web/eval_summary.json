@@ -1,0 +1,25 @@
+{
+  "source": "eval/README.md",
+  "date": "2026-10-18",
+  "extraction": [
+    {"model": "qwen3:4b", "note": "run 2, current prompt", "before": 0.60, "after": 0.71, "recall": 0.80, "agent_contradictions": "2 / 2"},
+    {"model": "qwen3:4b", "note": "run 1, early prompt", "before": 0.40, "after": 0.57, "recall": 0.60, "agent_contradictions": "2 / 2"},
+    {"model": "qwen3:8b", "note": "made no extraction mistakes, so nothing to learn", "before": 1.00, "after": 1.00, "recall": 0.80, "agent_contradictions": "2 / 2"}
+  ],
+  "checks": [
+    {"pipeline": "Single pass", "correct": 4, "total": 6, "latency": "~15 s", "note": "Both cache traps flagged as contradictions"},
+    {"pipeline": "Single pass + self-correction critic", "correct": 6, "total": 6, "latency": "~22 s", "note": "The critic drops the false alarms"}
+  ],
+  "dogfood": {
+    "messages": 143,
+    "entries": 24,
+    "model": "qwen3.8-27b, gpt-oss-120b fallback",
+    "right": [
+      "The project will be named Sthira",
+      "Run on a local open-weight model to keep user data private",
+      "Don't pitch the 'Hacktoberfest PR' angle: PRs no longer earn rewards in 2026"
+    ],
+    "wrong": "Some entries were conversation chatter attributed to the user, which is why a person reviews every entry."
+  },
+  "limits": "One small scenario built by the same team, a simulated reviewer, unseeded runs. Smoke-test numbers, not a benchmark."
+}

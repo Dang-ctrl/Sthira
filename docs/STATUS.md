@@ -45,6 +45,7 @@ Create these in `demo/` (fictional project "Acme Notes", a note-taking app):
 4. `eval/gold.json`: the list of real decisions, questions and commitments you planted, so we can measure precision and recall.
 
 ## Log
+- Vidit: round-2 UI on `feat/web-finals` (Vidit's fork, draft PR; **not deployed**, production still shows the round-1 build): guided tour, live agent-session replay, re-check after a correction (before → after), entry drawer with source context and decision history, Ctrl+K palette, charts, activity feed, evidence panel, install tabs, JSON/Markdown export, verdict cache for the Groq quota. Needs from core for even better: critic details in `Verdict`, an exported dogfood ledger.
 - 11:35: Hosted model live (Groq, qwen3.8-27b + gpt-oss-120b fallback): checks ~1 s, upload+extract ~2 s. Production was down about 5 min at 11:30 because I deployed a half-merged tree (fixed; deploys now gated on tests).
 - 11:10: Added #10–#15 (Cursor rules, model-down errors, subtitles, Gemini, learned rules, Vidit's review fixes). Learned-rules panel live. Integration dry-run clean. Dogfood found real decisions from our own session.
 - 10:55: Merged Vidit's #9 (labelled keyword fallback for typed checks) and redeployed. Handbook update: first-round eval 14:00–15:30, criteria published, live URL no longer required (we have one anyway). Primer PDF in docs/primer/.

@@ -64,6 +64,13 @@ api.sync(path: str = "AGENTS.md") -> str                        # returns the wr
 | POST | `/api/ingest` | multipart file + `kind` | `{messages, sources}` |
 | POST | `/api/extract` | `{limit}` | `Entry[]` |
 | GET | `/api/stats` | none | feedback stats + counts |
+| GET | `/api/entries/{id}/context` | `around` (0-5) | `{title, messages: [{role, ts, text, match}]}`, the source conversation around the quote |
+| GET | `/api/history` | `limit` | newest-first events: extracted, settle, reject, override |
+| GET | `/api/export` | `format=json\|md` | the whole ledger as a download |
+| GET | `/api/eval` | none | headline numbers from `eval/README.md` |
+| GET | `/api/demo-session` | none | `{title, messages}` from `demo/claude_code/session.jsonl` |
+
+`POST /api/check` may add `"cached": true` (same text, unchanged ledger and feedback, within 10 minutes) or `"fallback": "keyword" | "recorded"` (hosted model unreachable). The Verdict fields are otherwise unchanged.
 
 ## Environment
 
