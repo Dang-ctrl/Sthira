@@ -102,6 +102,13 @@ def supersede(old_id: str, new_id: str):
 
 
 @app.command()
+def replace(old_id: str, statement: str, why: str = typer.Option("", "--why", "-w")):
+    """Change your mind: settle a new decision and supersede the old one (which is kept as history)."""
+    r = api.replace(old_id, statement, why)
+    console.print(_entry_table([r["old"], r["new"]], "Superseded → new decision"))
+
+
+@app.command()
 def check(text: str):
     """Check new work against what you've settled."""
     v = api.check(text)
