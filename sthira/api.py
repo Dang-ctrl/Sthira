@@ -103,6 +103,12 @@ def correct_check(text: str, note: str, con=None) -> None:
     store.add_feedback(con, "check", "override", None, note, text)
 
 
+def learned_rules(con=None) -> list[dict]:
+    """The rules Sthira learned from your rejections and verdict corrections (applied on every future run)."""
+    con = con or store.connect()
+    return _feedback.learned_rules(con)
+
+
 def feedback_stats(con=None) -> dict:
     con = con or store.connect()
     return _feedback.stats(con)

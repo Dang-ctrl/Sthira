@@ -141,6 +141,23 @@ def sync(path: Optional[str] = typer.Argument(None, help="Defaults to AGENTS.md,
 
 
 @app.command()
+def rules():
+    """Show what Sthira has learned from your corrections (applied to every future extraction and check)."""
+    learned = api.learned_rules()
+    if not learned:
+        console.print("Nothing learned yet. Reject a bad extraction with a reason, or correct a check verdict.")
+        return
+    t = Table(title="Learned from you", expand=True)
+    t.add_column("applies to", no_wrap=True)
+    t.add_column("rule", ratio=3)
+    t.add_column("from", ratio=2)
+    t.add_column("times", justify="right")
+    for r in learned:
+        t.add_row(r["applies_to"], r["rule"], r["example"][:80], str(r["examples"]))
+    console.print(t)
+
+
+@app.command()
 def stats():
     """Show how Sthira's precision changes as it learns from your corrections."""
     s = api.feedback_stats()
