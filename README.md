@@ -6,6 +6,8 @@
 
 *sthira* (Sanskrit): steady, firm, unshakable.
 
+**[Live demo →](https://sthira-mocha.vercel.app)** · [How it learns](eval/README.md) · [Demo script](docs/DEMO_SCRIPT.md)
+
 </div>
 
 You make decisions across many conversations with AI: in ChatGPT, in Claude, in coding agents, in meetings. Weeks later an agent cheerfully undoes one of them, because nothing remembers *what was settled and why*.
@@ -46,7 +48,7 @@ $ sthira check "Migrate the user store from Postgres to MongoDB to avoid joins"
 3. It reads a later export plus a meeting transcript. Extraction now applies the learned rules.
 4. It scans today's Claude Code session, where the agent proposes migrating to MongoDB and adding password login. Sthira flags both, citing the March decisions.
 
-Run on `qwen3:4b` on a laptop, extraction precision went from **0.40 to 0.57** after the first round of corrections. Both agent contradictions were caught. The numbers are small and honest, and the eval is reproducible: run it yourself.
+On `qwen3:4b` on a laptop, extraction precision on unseen conversations rose from **0.60 to 0.71** after one round of corrections (recall 0.80). Contradiction checks went from 4/6 to **6/6** once the self-correcting critic pass was added. Full numbers, including a qwen3:8b comparison and the limits, are in [`eval/README.md`](eval/README.md).
 
 ## Quickstart
 
