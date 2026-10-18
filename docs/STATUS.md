@@ -4,6 +4,8 @@ Update this file whenever you finish something, get blocked, or hand off (for ex
 
 ## Board
 
+**⏰ First-round evaluation runs 14:00–15:30 (be demo-ready by 14:00).** Criteria: one working feature · relevance to the theme · clear problem and solution. Submit: repo URL + Track 2 / O2 (portal TBA).
+
 **Live demo:** https://sthira-mocha.vercel.app · **PRs:** #1 core → #2 demo/eval → #3 web (stacked; merge in order)
 
 | Workstream | Owner | Status | Next step |
@@ -14,7 +16,8 @@ Update this file whenever you finish something, get blocked, or hand off (for ex
 | **BLOCKER: hosted model** | **Ojas** | todo | add a card to the Vercel team (unlocks AI Gateway free credits) **or** set `STHIRA_OPENAI_API_KEY` + `STHIRA_OPENAI_BASE_URL` + `STHIRA_MODEL` (e.g. Groq `qwen/qwen3-32b`) in Vercel project *sthira* env. Until then, example checks use labelled recorded verdicts |
 | **ShipWright app on repo** | **Ojas** (admin) | todo | install https://github.com/apps/shipwright-agent, then comment `/shipwright rerun` on PRs #1–#3; merge by ~12:00 regardless |
 | Demo script / pitch / backup video / submission | Danica | todo | `docs/DEMO_SCRIPT.md` is ready; rehearse, record a backup video of the live site + `sthira demo` |
-| Polish / extra parsers / review | Vidit | open | pick anything: e.g. Cursor or Gemini parser in `sthira/ingest/`, UI polish in `web/static/index.html` (branch off `feat/web-demo`) |
+| Collaborator access for Vidit + Danica | **Ojas** | todo | Settings → Collaborators (fork PRs only get basic ShipWright checks) |
+| Polish / extra parsers / review | Vidit | #9 merged ✓; #8 overlaps #3 (suggest closing) | pick anything: e.g. Cursor or Gemini parser in `sthira/ingest/`, UI polish in `web/static/index.html` (branch off `feat/web-demo`) |
 
 ## Demo data brief (Danica)
 
@@ -30,6 +33,7 @@ Create these in `demo/` (fictional project "Acme Notes", a note-taking app):
 4. `eval/gold.json`: the list of real decisions, questions and commitments you planted, so we can measure precision and recall.
 
 ## Log
+- 10:55: Merged Vidit's #9 (labelled keyword fallback for typed checks) and redeployed. Handbook update: first-round eval 14:00–15:30, criteria published, live URL no longer required (we have one anyway). Primer PDF in docs/primer/.
 - 10:05: Critic pass added (checks 6/6). qwen3:8b comparison done. Live site deployed with seeded ledger and labelled fallback. Waiting on two Ojas-only actions (hosted model, ShipWright).
 - 09:27: `sthira demo` proves learning: precision 0.40 → 0.57 (run 1), and both agent contradictions in today's Claude Code session are caught. Web demo works locally. PR #1 is open (no ShipWright review yet, so the app may need installing by Ojas).
 - 09:15: Core engine works end to end on qwen3:4b: ingest, extract (~50s for 2 convs), settle/reject, cited contradiction check (~15s), sync, MCP. 6 tests pass. `sthira.api` matches CONTRACTS.md, so Vidit can import it directly in `web/`.

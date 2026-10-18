@@ -7,7 +7,7 @@
 | Track | **Track 2: Best Open-Source AI Project** |
 | Primary problem statement | **O2: Adaptive AI with Memory and Self-Correction** |
 | Public GitHub repository | https://github.com/HelloOjasMutreja/Sthira |
-| Live deployment URL | https://sthira-mocha.vercel.app |
+| Live deployment URL (bonus; no longer required) | https://sthira-mocha.vercel.app |
 | License | MIT |
 | Open-weight AI used | Qwen3 (4B / 8B) locally via Ollama; Qwen3-32B for the hosted demo |
 
@@ -21,3 +21,8 @@ Sthira remembers what you decided while working with AI. It reads your ChatGPT a
   - Hallucinated quotes are dropped by verifying them against the source.
   - A critic pass re-examines every claimed contradiction. It took checks from 4/6 to 6/6 (`scripts/eval_checks.py`).
 - **Adapts over time:** decisions can be superseded, with history kept, so the ledger tracks how your thinking changed.
+
+## Social Media Challenge (X only)
+Post about the build with a photo, follow and tag KrowdKraft and the listed partners, and use **#BuildWithKrowdKraft**. Draft:
+
+> We built Sthira at #HacktoberfestHackDay Bengaluru: your AI forgets what you decided, Sthira doesn't. It reads your AI chats and coding-agent sessions with an open-weight model on your laptop, keeps a cited ledger of your decisions, and warns when an agent goes against one. Open source: github.com/HelloOjasMutreja/Sthira #BuildWithKrowdKraft
