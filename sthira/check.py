@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sqlite3
 
 from . import config, feedback, llm, store
@@ -67,7 +68,8 @@ def check(con: sqlite3.Connection, text: str) -> Verdict:
     for c in data.get("conflicts", []):
         n = c.get("n")
         if isinstance(n, int) and 0 <= n < len(cands):
-            conflicts.append(Conflict(entry=cands[n], explanation=c.get("explanation", "")))
+            explanation = re.sub(r"\s*\[\d+\]", "", c.get("explanation", "")).replace("settled decision states", "decision states")
+            conflicts.append(Conflict(entry=cands[n], explanation=explanation))
     verdict = data.get("verdict", "unrelated")
     if verdict == "contradicts" and not conflicts:
         verdict = "consistent"
