@@ -108,6 +108,9 @@ def feedback_stats(con=None) -> dict:
     return _feedback.stats(con)
 
 
-def sync(path: str = "AGENTS.md", con=None) -> str:
+def sync(path: str | None = None, con=None, fmt: str = "agents") -> str:
+    """fmt='agents' updates a managed block in AGENTS.md/CLAUDE.md; fmt='cursor' writes .cursor/rules/sthira.mdc."""
     con = con or store.connect()
-    return _sync.sync(con, path)
+    if fmt == "cursor":
+        return _sync.sync_cursor(con, path or _sync.CURSOR_RULE)
+    return _sync.sync(con, path or "AGENTS.md")

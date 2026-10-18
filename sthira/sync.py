@@ -45,3 +45,17 @@ def sync(con: sqlite3.Connection, path: str = "AGENTS.md") -> str:
         text = (text.rstrip() + "\n\n" if text.strip() else "") + block + "\n"
     p.write_text(text, encoding="utf-8")
     return block
+
+
+CURSOR_RULE = ".cursor/rules/sthira.mdc"
+
+
+def sync_cursor(con: sqlite3.Connection, path: str = CURSOR_RULE) -> str:
+    """Write settled context as an always-applied Cursor rule. The whole file is managed by Sthira."""
+    body = render(con).replace(START, "").replace(END, "").strip()
+    text = ("---\ndescription: Settled decisions and context managed by Sthira (do not edit by hand)\n"
+            "alwaysApply: true\n---\n\n" + body + "\n")
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(text, encoding="utf-8")
+    return text

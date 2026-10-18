@@ -131,10 +131,13 @@ def correct(text: str, note: str):
 
 
 @app.command()
-def sync(path: str = typer.Argument("AGENTS.md")):
-    """Write settled context into AGENTS.md / CLAUDE.md for every coding agent."""
-    api.sync(path)
-    console.print(f"[green]Updated[/] {path}")
+def sync(path: Optional[str] = typer.Argument(None, help="Defaults to AGENTS.md, or .cursor/rules/sthira.mdc with --format cursor"),
+         fmt: str = typer.Option("agents", "--format", "-f", help="agents (AGENTS.md / CLAUDE.md block) | cursor (Cursor rule)")):
+    """Write settled context where coding agents read it: AGENTS.md / CLAUDE.md, or a Cursor rule."""
+    if fmt not in ("agents", "cursor"):
+        raise typer.BadParameter("format must be 'agents' or 'cursor'")
+    api.sync(path, fmt=fmt)
+    console.print(f"[green]Updated[/] {path or ('.cursor/rules/sthira.mdc' if fmt == 'cursor' else 'AGENTS.md')}")
 
 
 @app.command()

@@ -99,3 +99,13 @@ def test_replace_supersedes_and_keeps_history(tmp_path):
     assert r["old"].status == "superseded" and r["old"].superseded_by == r["new"].id
     assert r["new"].status == "settled" and r["new"].rationale == "multi-region writes"
     assert [e.id for e in store.list_entries(con, status="settled")] == [r["new"].id]
+
+
+def test_sync_cursor_rule(tmp_path):
+    con = store.connect(tmp_path / "t.db")
+    store.insert_entry(con, _entry("Use Postgres for the user store"))
+    target = tmp_path / ".cursor" / "rules" / "sthira.mdc"
+    sync.sync_cursor(con, str(target))
+    text = target.read_text(encoding="utf-8")
+    assert text.startswith("---\n") and "alwaysApply: true" in text
+    assert "Use Postgres" in text and sync.START not in text
