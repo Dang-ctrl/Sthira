@@ -1,0 +1,342 @@
+[
+ {
+  "id": "acme-frontend",
+  "conversation_id": "acme-frontend",
+  "title": "Acme Notes: frontend stack",
+  "create_time": 1775124000.0,
+  "current_node": "acme-frontend-3",
+  "mapping": {
+   "acme-frontend-root": {
+    "id": "acme-frontend-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-frontend-0"
+    ]
+   },
+   "acme-frontend-0": {
+    "id": "acme-frontend-0",
+    "parent": "acme-frontend-root",
+    "children": [
+     "acme-frontend-1"
+    ],
+    "message": {
+     "id": "acme-frontend-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1775124000.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Frontend for Acme Notes: React with Next.js or SvelteKit?"
+      ]
+     }
+    }
+   },
+   "acme-frontend-1": {
+    "id": "acme-frontend-1",
+    "parent": "acme-frontend-0",
+    "children": [
+     "acme-frontend-2"
+    ],
+    "message": {
+     "id": "acme-frontend-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1775124090.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Next.js has the bigger ecosystem; SvelteKit is lighter and simpler. Which does your team know?"
+      ]
+     }
+    }
+   },
+   "acme-frontend-2": {
+    "id": "acme-frontend-2",
+    "parent": "acme-frontend-1",
+    "children": [
+     "acme-frontend-3"
+    ],
+    "message": {
+     "id": "acme-frontend-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1775124180.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "The whole team knows Svelte already. We'll use SvelteKit, not Next.js. And always TypeScript in strict mode."
+      ]
+     }
+    }
+   },
+   "acme-frontend-3": {
+    "id": "acme-frontend-3",
+    "parent": "acme-frontend-2",
+    "children": [],
+    "message": {
+     "id": "acme-frontend-3",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1775124270.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Got it. SvelteKit with strict TypeScript."
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "acme-trip",
+  "conversation_id": "acme-trip",
+  "title": "Weekend in Coorg",
+  "create_time": 1775894400.0,
+  "current_node": "acme-trip-2",
+  "mapping": {
+   "acme-trip-root": {
+    "id": "acme-trip-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-trip-0"
+    ]
+   },
+   "acme-trip-0": {
+    "id": "acme-trip-0",
+    "parent": "acme-trip-root",
+    "children": [
+     "acme-trip-1"
+    ],
+    "message": {
+     "id": "acme-trip-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1775894400.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Planning a weekend trip to Coorg, any tips?"
+      ]
+     }
+    }
+   },
+   "acme-trip-1": {
+    "id": "acme-trip-1",
+    "parent": "acme-trip-0",
+    "children": [
+     "acme-trip-2"
+    ],
+    "message": {
+     "id": "acme-trip-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1775894490.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Visit Abbey Falls early, try a coffee estate stay, and carry a light jacket."
+      ]
+     }
+    }
+   },
+   "acme-trip-2": {
+    "id": "acme-trip-2",
+    "parent": "acme-trip-1",
+    "children": [],
+    "message": {
+     "id": "acme-trip-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1775894580.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "thanks, sounds lovely!"
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "acme-push",
+  "conversation_id": "acme-push",
+  "title": "Acme Notes: push notifications",
+  "create_time": 1779285600.0,
+  "current_node": "acme-push-3",
+  "mapping": {
+   "acme-push-root": {
+    "id": "acme-push-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-push-0"
+    ]
+   },
+   "acme-push-0": {
+    "id": "acme-push-0",
+    "parent": "acme-push-root",
+    "children": [
+     "acme-push-1"
+    ],
+    "message": {
+     "id": "acme-push-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1779285600.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "We tried Firebase Cloud Messaging for push in the beta and it was really flaky on iOS. Alternatives?"
+      ]
+     }
+    }
+   },
+   "acme-push-1": {
+    "id": "acme-push-1",
+    "parent": "acme-push-0",
+    "children": [
+     "acme-push-2"
+    ],
+    "message": {
+     "id": "acme-push-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1779285690.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "You could use APNs directly for iOS, or a service like OneSignal."
+      ]
+     }
+    }
+   },
+   "acme-push-2": {
+    "id": "acme-push-2",
+    "parent": "acme-push-1",
+    "children": [
+     "acme-push-3"
+    ],
+    "message": {
+     "id": "acme-push-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1779285780.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Lesson learned: don't rely on FCM for iOS. Let's use APNs directly for iOS push."
+      ]
+     }
+    }
+   },
+   "acme-push-3": {
+    "id": "acme-push-3",
+    "parent": "acme-push-2",
+    "children": [],
+    "message": {
+     "id": "acme-push-3",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1779285870.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Ok, APNs for iOS, and you can keep FCM for Android."
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "acme-poem",
+  "conversation_id": "acme-poem",
+  "title": "Poem for mom",
+  "create_time": 1779735600.0,
+  "current_node": "acme-poem-2",
+  "mapping": {
+   "acme-poem-root": {
+    "id": "acme-poem-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-poem-0"
+    ]
+   },
+   "acme-poem-0": {
+    "id": "acme-poem-0",
+    "parent": "acme-poem-root",
+    "children": [
+     "acme-poem-1"
+    ],
+    "message": {
+     "id": "acme-poem-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1779735600.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "write a short poem for my mom's birthday"
+      ]
+     }
+    }
+   },
+   "acme-poem-1": {
+    "id": "acme-poem-1",
+    "parent": "acme-poem-0",
+    "children": [
+     "acme-poem-2"
+    ],
+    "message": {
+     "id": "acme-poem-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1779735690.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Roses bloom where you have walked, your kindness is the light we talk..."
+      ]
+     }
+    }
+   },
+   "acme-poem-2": {
+    "id": "acme-poem-2",
+    "parent": "acme-poem-1",
+    "children": [],
+    "message": {
+     "id": "acme-poem-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1779735780.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "aww she'll love it, thank you"
+      ]
+     }
+    }
+   }
+  }
+ }
+]

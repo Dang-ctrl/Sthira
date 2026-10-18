@@ -9,8 +9,9 @@ Update this file whenever you finish something, get blocked, or hand off (for ex
 | P0 skeleton + shared docs | Ojas + Claude | done | |
 | Core engine (store/ingest/extract/check/feedback/sync/CLI) | Ojas + Claude | done on `feat/core-engine`, PR pending | Ojas opens the PR; next: polish demo flow and learning proof |
 | MCP server (`sthira/mcp_server.py`) | Ojas + Claude (taken over to save Vidit time) | done | |
-| Web demo (`web/`) + deploy | Vidit | not started | read CONTRACTS.md, scaffold FastAPI + UI with a fake API |
-| Demo data (`demo/`) + gold labels | Danica | not started | see "Demo data brief" below |
+| Web demo (`web/`) + deploy | Claude (built since Vidit hadn't started; Vidit: take over polish/deploy if you like) | built on `feat/web-demo`, works locally | deploy to Vercel (AI Gateway → open-weight `alibaba/qwen-3-32b`, no key needed) |
+| Demo data + `sthira demo` + `scan` + Claude Code `hook` | Claude | done on `feat/core-demo` | Danica: review the story in `scripts/make_demo_data.py` and enrich if you like |
+| Demo script, pitch, backup video, submission form | Danica | todo | 2-minute demo script following PLAN.md section 7; record the backup video once the URL is live |
 | ShipWright app installed on repo | Ojas (admin) | todo | https://github.com/apps/shipwright-agent |
 | Hosted open-weight API key for live demo | Ojas/Vidit | todo | pick provider, put key in deploy env (never commit it) |
 
@@ -28,5 +29,6 @@ Create these in `demo/` (fictional project "Acme Notes", a note-taking app):
 4. `eval/gold.json`: the list of real decisions, questions and commitments you planted, so we can measure precision and recall.
 
 ## Log
+- 09:27: `sthira demo` proves learning: precision 0.40 → 0.57 (run 1), and both agent contradictions in today's Claude Code session are caught. Web demo works locally. PR #1 is open (no ShipWright review yet, so the app may need installing by Ojas).
 - 09:15: Core engine works end to end on qwen3:4b: ingest, extract (~50s for 2 convs), settle/reject, cited contradiction check (~15s), sync, MCP. 6 tests pass. `sthira.api` matches CONTRACTS.md, so Vidit can import it directly in `web/`.
 - 08:21: Repo cloned and empty. Plan written (`docs/PLAN.md`). Local Ollama has qwen3:4b, qwen3:8b and nomic-embed-text.

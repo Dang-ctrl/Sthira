@@ -14,3 +14,4 @@ node_modules/
 # scratch research copies (final reports live in docs/research/)
 reports/
 research_notes/
+.claude/launch.json

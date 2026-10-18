@@ -1,0 +1,497 @@
+[
+ {
+  "id": "acme-db",
+  "conversation_id": "acme-db",
+  "title": "Acme Notes: database choice",
+  "create_time": 1772618400.0,
+  "current_node": "acme-db-5",
+  "mapping": {
+   "acme-db-root": {
+    "id": "acme-db-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-db-0"
+    ]
+   },
+   "acme-db-0": {
+    "id": "acme-db-0",
+    "parent": "acme-db-root",
+    "children": [
+     "acme-db-1"
+    ],
+    "message": {
+     "id": "acme-db-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772618400.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "I'm starting Acme Notes, a collaborative note-taking app. Postgres or MongoDB for the user store?"
+      ]
+     }
+    }
+   },
+   "acme-db-1": {
+    "id": "acme-db-1",
+    "parent": "acme-db-0",
+    "children": [
+     "acme-db-2"
+    ],
+    "message": {
+     "id": "acme-db-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1772618490.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Both can work. MongoDB gives schema flexibility; Postgres gives relational integrity, joins and mature tooling. What do your access patterns look like?"
+      ]
+     }
+    }
+   },
+   "acme-db-2": {
+    "id": "acme-db-2",
+    "parent": "acme-db-1",
+    "children": [
+     "acme-db-3"
+    ],
+    "message": {
+     "id": "acme-db-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772618580.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Users belong to orgs, orgs share notebooks, notebooks have permissions per user. Lots of joins."
+      ]
+     }
+    }
+   },
+   "acme-db-3": {
+    "id": "acme-db-3",
+    "parent": "acme-db-2",
+    "children": [
+     "acme-db-4"
+    ],
+    "message": {
+     "id": "acme-db-3",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1772618670.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "That's strongly relational. Postgres fits well; with MongoDB you'd end up re-implementing joins in application code."
+      ]
+     }
+    }
+   },
+   "acme-db-4": {
+    "id": "acme-db-4",
+    "parent": "acme-db-3",
+    "children": [
+     "acme-db-5"
+    ],
+    "message": {
+     "id": "acme-db-4",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772618760.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Ok, decided: we go with Postgres, not MongoDB. We need joins across users, orgs and notebooks."
+      ]
+     }
+    }
+   },
+   "acme-db-5": {
+    "id": "acme-db-5",
+    "parent": "acme-db-4",
+    "children": [],
+    "message": {
+     "id": "acme-db-5",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1772618850.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Great. I'll sketch the schema with users, orgs, memberships and notebooks tables."
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "acme-cat",
+  "conversation_id": "acme-cat",
+  "title": "Cat names",
+  "create_time": 1772830800.0,
+  "current_node": "acme-cat-2",
+  "mapping": {
+   "acme-cat-root": {
+    "id": "acme-cat-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-cat-0"
+    ]
+   },
+   "acme-cat-0": {
+    "id": "acme-cat-0",
+    "parent": "acme-cat-root",
+    "children": [
+     "acme-cat-1"
+    ],
+    "message": {
+     "id": "acme-cat-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772830800.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "random question, what's a cute name for a grey kitten?"
+      ]
+     }
+    }
+   },
+   "acme-cat-1": {
+    "id": "acme-cat-1",
+    "parent": "acme-cat-0",
+    "children": [
+     "acme-cat-2"
+    ],
+    "message": {
+     "id": "acme-cat-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1772830890.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "How about Miso, Pebble or Ash?"
+      ]
+     }
+    }
+   },
+   "acme-cat-2": {
+    "id": "acme-cat-2",
+    "parent": "acme-cat-1",
+    "children": [],
+    "message": {
+     "id": "acme-cat-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1772830980.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "haha Miso is perfect, thanks!"
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "acme-auth",
+  "conversation_id": "acme-auth",
+  "title": "Acme Notes: login flow",
+  "create_time": 1773055800.0,
+  "current_node": "acme-auth-3",
+  "mapping": {
+   "acme-auth-root": {
+    "id": "acme-auth-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-auth-0"
+    ]
+   },
+   "acme-auth-0": {
+    "id": "acme-auth-0",
+    "parent": "acme-auth-root",
+    "children": [
+     "acme-auth-1"
+    ],
+    "message": {
+     "id": "acme-auth-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1773055800.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "For Acme Notes login, should I do email+password, OAuth, or magic links?"
+      ]
+     }
+    }
+   },
+   "acme-auth-1": {
+    "id": "acme-auth-1",
+    "parent": "acme-auth-0",
+    "children": [
+     "acme-auth-2"
+    ],
+    "message": {
+     "id": "acme-auth-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1773055890.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Magic links remove password resets and credential stuffing risk. OAuth is convenient but adds provider dependencies. Passwords are familiar but costly to support."
+      ]
+     }
+    }
+   },
+   "acme-auth-2": {
+    "id": "acme-auth-2",
+    "parent": "acme-auth-1",
+    "children": [
+     "acme-auth-3"
+    ],
+    "message": {
+     "id": "acme-auth-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1773055980.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Password resets were half our support tickets at my last job. Let's do magic links only, no passwords."
+      ]
+     }
+    }
+   },
+   "acme-auth-3": {
+    "id": "acme-auth-3",
+    "parent": "acme-auth-2",
+    "children": [],
+    "message": {
+     "id": "acme-auth-3",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1773056070.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Makes sense. I'll plan an email magic-link flow with 15 minute expiry."
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "acme-crdt",
+  "conversation_id": "acme-crdt",
+  "title": "Explain CRDTs",
+  "create_time": 1773565200.0,
+  "current_node": "acme-crdt-3",
+  "mapping": {
+   "acme-crdt-root": {
+    "id": "acme-crdt-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-crdt-0"
+    ]
+   },
+   "acme-crdt-0": {
+    "id": "acme-crdt-0",
+    "parent": "acme-crdt-root",
+    "children": [
+     "acme-crdt-1"
+    ],
+    "message": {
+     "id": "acme-crdt-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1773565200.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Can you explain CRDTs simply?"
+      ]
+     }
+    }
+   },
+   "acme-crdt-1": {
+    "id": "acme-crdt-1",
+    "parent": "acme-crdt-0",
+    "children": [
+     "acme-crdt-2"
+    ],
+    "message": {
+     "id": "acme-crdt-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1773565290.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "CRDTs are data structures that let multiple replicas edit independently and merge without conflicts, like a shared counter that only adds."
+      ]
+     }
+    }
+   },
+   "acme-crdt-2": {
+    "id": "acme-crdt-2",
+    "parent": "acme-crdt-1",
+    "children": [
+     "acme-crdt-3"
+    ],
+    "message": {
+     "id": "acme-crdt-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1773565380.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "nice, and how is that different from operational transforms?"
+      ]
+     }
+    }
+   },
+   "acme-crdt-3": {
+    "id": "acme-crdt-3",
+    "parent": "acme-crdt-2",
+    "children": [],
+    "message": {
+     "id": "acme-crdt-3",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1773565470.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "OT transforms concurrent operations against each other through a central server; CRDTs merge by design without coordination."
+      ]
+     }
+    }
+   }
+  }
+ },
+ {
+  "id": "acme-pricing",
+  "conversation_id": "acme-pricing",
+  "title": "Acme Notes: pricing",
+  "create_time": 1774022400.0,
+  "current_node": "acme-pricing-3",
+  "mapping": {
+   "acme-pricing-root": {
+    "id": "acme-pricing-root",
+    "message": null,
+    "parent": null,
+    "children": [
+     "acme-pricing-0"
+    ]
+   },
+   "acme-pricing-0": {
+    "id": "acme-pricing-0",
+    "parent": "acme-pricing-root",
+    "children": [
+     "acme-pricing-1"
+    ],
+    "message": {
+     "id": "acme-pricing-0",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1774022400.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Thinking about pricing for Acme Notes. Monthly at $8 or annual at $80?"
+      ]
+     }
+    }
+   },
+   "acme-pricing-1": {
+    "id": "acme-pricing-1",
+    "parent": "acme-pricing-0",
+    "children": [
+     "acme-pricing-2"
+    ],
+    "message": {
+     "id": "acme-pricing-1",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1774022490.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Annual improves cash flow and retention; monthly lowers the barrier. Many offer both."
+      ]
+     }
+    }
+   },
+   "acme-pricing-2": {
+    "id": "acme-pricing-2",
+    "parent": "acme-pricing-1",
+    "children": [
+     "acme-pricing-3"
+    ],
+    "message": {
+     "id": "acme-pricing-2",
+     "author": {
+      "role": "user"
+     },
+     "create_time": 1774022580.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "I honestly can't decide yet. Let's leave pricing open until we have beta users and revisit."
+      ]
+     }
+    }
+   },
+   "acme-pricing-3": {
+    "id": "acme-pricing-3",
+    "parent": "acme-pricing-2",
+    "children": [],
+    "message": {
+     "id": "acme-pricing-3",
+     "author": {
+      "role": "assistant"
+     },
+     "create_time": 1774022670.0,
+     "content": {
+      "content_type": "text",
+      "parts": [
+       "Sounds reasonable. You can gather willingness-to-pay data during beta."
+      ]
+     }
+    }
+   }
+  }
+ }
+]

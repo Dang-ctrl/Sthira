@@ -146,6 +146,69 @@ def mcp():
 
 
 @app.command()
+def scan(path: str):
+    """Check what an AI agent proposed in a session (e.g. a Claude Code .jsonl) against your ledger."""
+    with console.status("Checking the agent's proposals…"):
+        results = api.scan(path)
+    for r in results:
+        v = r["verdict"]
+        if v.verdict == "contradicts":
+            for c in v.conflicts:
+                console.print(Panel(
+                    f"[bold]Agent said:[/] {r['text'][:300]}\n\n[bold red]Contradicts:[/] {c.entry.statement}\n"
+                    f"[dim]Decided {(c.entry.decided_at or '')[:10]} in “{c.entry.source.title}”: “{c.entry.source.quote}”[/]\n\n"
+                    f"{c.explanation}", title="⚠ Sthira", border_style="red"))
+        else:
+            console.print(f"[green]✓ {v.verdict}[/]  {r['text'][:100]}")
+
+
+@app.command()
+def hook():
+    """Claude Code hook (UserPromptSubmit): warns the agent and you when a prompt contradicts a settled decision."""
+    import json as _json
+
+    try:
+        data = _json.loads(sys.stdin.read() or "{}")
+    except _json.JSONDecodeError:
+        raise typer.Exit(0)
+    text = data.get("prompt") or ""
+    if not text.strip():
+        raise typer.Exit(0)
+    con = store.connect()
+    if not store.list_entries(con, status="settled", q=text):  # fast path: nothing related, stay silent
+        raise typer.Exit(0)
+    try:
+        v = api.check(text, con=con)
+    except Exception:
+        raise typer.Exit(0)  # never block the user's agent because Sthira failed
+    if v.verdict != "contradicts":
+        raise typer.Exit(0)
+    notes = [f"- {c.entry.statement} (decided {(c.entry.decided_at or '')[:10]} in \"{c.entry.source.title}\"): {c.explanation}"
+             for c in v.conflicts]
+    msg = "Sthira: this request contradicts settled decisions:\n" + "\n".join(notes)
+    print(_json.dumps({
+        "systemMessage": msg,
+        "hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext":
+                               msg + "\nBefore doing anything, point out the conflict and ask the user whether to keep "
+                                     "the old decision or supersede it."},
+    }))
+
+
+@app.command()
+def demo(db: str = typer.Option(str(config.db_path().parent / "demo.db"), help="Throwaway DB for the demo")):
+    """Run the scripted demo: learning from corrections, then catching an agent's contradictions."""
+    from pathlib import Path
+
+    from . import demo as _demo
+
+    result = _demo.run(Path(db), say=console.print)
+    console.print(Panel(f"Precision before corrections: [bold]{result['phase1']['precision']}[/]\n"
+                        f"Precision after corrections:  [bold green]{result['phase2']['precision']}[/]\n"
+                        f"Recall vs gold labels: {result['recall']}",
+                        title="Sthira learned from feedback", border_style="green"))
+
+
+@app.command()
 def where():
     """Show where the ledger lives."""
     console.print(str(config.db_path()))
