@@ -209,7 +209,14 @@ async function run() {
     } else {
       $("#result").innerHTML = `<div class="verdict ok"><h3>✓ ${v.verdict === "unrelated" ? "No related decisions, go ahead" : "Consistent with what you’ve settled"}</h3><p class="meta" style="margin:0">Checked by ${esc(v.model)}</p></div>`;
     }
-  } catch (e) { $("#result").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  } catch (e) {
+    const offline = /Model call failed/.test(e.message);
+    $("#result").innerHTML = offline
+      ? `<div class="verdict ok" style="background:var(--warn-soft);border-color:var(--line)"><h3 style="color:var(--warn)">The hosted model is busy or offline right now</h3>
+         <p style="margin:0 0 6px">Try one of the example checks above (verdicts recorded from a real local Qwen3 run), or run Sthira on your machine, where everything runs locally:</p>
+         <pre>uv run sthira check "${esc(text.slice(0, 80))}"</pre></div>`
+      : `<p class="err">${esc(e.message)}</p>`;
+  }
   $("#go").disabled = false;
 }
 $("#go").onclick = run;
