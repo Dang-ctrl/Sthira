@@ -182,6 +182,11 @@ def extract(body: ExtractBody):
         raise HTTPException(502, f"Model call failed: {e}")
 
 
+@app.get("/api/rules")
+def rules():
+    return api.learned_rules(con=con())
+
+
 @app.get("/api/stats")
 def stats():
     return api.feedback_stats(con=con())

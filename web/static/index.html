@@ -128,6 +128,7 @@ footer a{color:var(--accent)}
         <button class="primary" id="go">Check against my decisions</button>
         <div class="result" id="result"></div>
         <div class="stats" id="stats"></div>
+        <div id="rules"></div>
       </div>
 
       <div class="card" style="margin-top:20px">
@@ -234,7 +235,7 @@ async function teach(text) {
   try {
     await j("/api/correct", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text, note})});
     $("#result").insertAdjacentHTML("beforeend", `<p class="meta">Noted. Future checks will use this correction.</p>`);
-    loadStats();
+    loadStats(); loadRules();
   } catch (e) { $("#result").insertAdjacentHTML("beforeend", `<p class="err">Couldn’t save the correction: ${esc(e.message)}</p>`); }
 }
 
@@ -280,10 +281,20 @@ async function loadStats() {
     <div class="stat"><div class="n">${pct(s.precision_before)} <span class="arrow">→ ${pct(s.precision_after)}</span></div><div class="l">extraction precision, before → after learning</div></div>`;
 }
 
+async function loadRules() {
+  const rs = await j("/api/rules");
+  $("#rules").innerHTML = rs.length ? `<h3 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:20px;margin:18px 0 6px">Learned from you</h3>
+    <p class="meta" style="margin:0 0 8px">Rules Sthira took from your corrections. It applies them on every future run.</p>` +
+    rs.map(r => `<div class="entry" style="margin-bottom:8px"><div class="row"><span class="kind">${esc(r.applies_to)}</span>
+      <span class="meta">taught ${r.examples}×</span></div><div class="stmt">${esc(r.rule)}</div>
+      ${r.example ? `<div class="meta">e.g. “${esc(r.example.slice(0, 110))}”</div>` : ""}</div>`).join("") : "";
+}
+
 async function load() {
   entries = await j("/api/entries");
   render();
   loadStats();
+  loadRules();
   $("#agents").textContent = (await j("/api/agents-md")).markdown;
 }
 
