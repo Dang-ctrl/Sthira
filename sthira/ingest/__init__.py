@@ -8,7 +8,7 @@ import zipfile
 from pathlib import Path
 
 from ..models import Message
-from . import chat_exports, claude_code, gemini, transcript
+from . import chat_exports, claude_code, gemini, subtitles, transcript
 
 ParseResult = list[tuple[str, str, str, list[Message]]]  # (source_type, path_key, title, messages)
 
@@ -18,7 +18,7 @@ def parse_path(path: str | Path, kind: str | None = None) -> ParseResult:
     if p.is_dir():
         out: ParseResult = []
         for f in sorted(p.rglob("*")):
-            if f.is_file() and f.suffix.lower() in {".json", ".jsonl", ".md", ".txt", ".zip"}:
+            if f.is_file() and f.suffix.lower() in {".json", ".jsonl", ".md", ".txt", ".zip", ".vtt", ".srt"}:
                 out.extend(parse_path(f, kind))
         return out
     return parse_bytes(p.name, p.read_bytes(), kind, str(p))
@@ -38,6 +38,9 @@ def parse_bytes(name: str, data: bytes, kind: str | None = None, key: str | None
     if kind == "claude_code" or (kind is None and suffix == ".jsonl"):
         title, msgs = claude_code.parse(text, name)
         return [("claude_code", key, title, msgs)] if msgs else []
+    if suffix in {".vtt", ".srt"}:
+        title, msgs = subtitles.parse(text, name)
+        return [("transcript", key, title, msgs)] if msgs else []
     if kind == "transcript" or (kind is None and suffix in {".md", ".txt"}):
         title, msgs = transcript.parse(text, name)
         return [("transcript", key, title, msgs)] if msgs else []
