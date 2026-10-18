@@ -3,9 +3,18 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from ..models import Message
+
+
+_HARNESS = re.compile(r"<(system-reminder|local-command-caveat|local-command-stdout|command-name|command-message|command-args)>.*?</\1>", re.S)
+
+
+def _clean(text: str) -> str:
+    """Drop harness-injected blocks (reminders, slash-command plumbing) so only human/agent prose remains."""
+    return _HARNESS.sub("", text).strip()
 
 
 def _text(content) -> str:
@@ -21,6 +30,7 @@ def _text(content) -> str:
 def parse(text: str, name: str) -> tuple[str, list[Message]]:
     out: list[Message] = []
     title = ""
+    project = ""
     for i, line in enumerate(text.splitlines()):
         line = line.strip()
         if not line:
@@ -31,8 +41,9 @@ def parse(text: str, name: str) -> tuple[str, list[Message]]:
             continue
         if rec.get("type") not in {"user", "assistant"} or rec.get("isMeta"):
             continue
+        project = project or Path(str(rec.get("cwd") or "")).name
         msg = rec.get("message") or {}
-        body = _text(msg.get("content")).strip()
+        body = _clean(_text(msg.get("content")))
         # Skip slash-command plumbing and system reminders that aren't human or agent prose.
         if not body or body.startswith("<command-") or body.startswith("<local-command"):
             continue
@@ -43,5 +54,5 @@ def parse(text: str, name: str) -> tuple[str, list[Message]]:
                            role=role, ts=rec.get("timestamp"), text=body))
     title = title or Path(name).stem
     for m in out:
-        m.conv_title = f"Claude Code: {title}"
+        m.conv_title = f"Claude Code ({project}): {title}" if project else f"Claude Code: {title}"
     return title, out
