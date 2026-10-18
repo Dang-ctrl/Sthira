@@ -57,6 +57,18 @@ def supersede(old_id: str, new_id: str, con=None) -> Entry:
     return store.set_status(con, old_id, "superseded", superseded_by=new_id)
 
 
+def replace(old_id: str, statement: str, rationale: str = "", con=None) -> dict:
+    """Deliberately change your mind: record the new decision as settled and supersede the old one (kept as history)."""
+    con = con or store.connect()
+    old = store.get_entry(con, old_id)
+    if old is None:
+        raise KeyError(old_id)
+    new = propose(statement, kind=old.kind, rationale=rationale, title=old.title, source_title="changed in Sthira", con=con)
+    new = store.set_status(con, new.id, "settled", trust="confirmed")
+    old = store.set_status(con, old_id, "superseded", superseded_by=new.id)
+    return {"old": old, "new": new}
+
+
 def propose(statement: str, kind: str = "decision", rationale: str = "", title: str = "",
             source_title: str = "manual", con=None) -> Entry:
     """Record a new entry directly (e.g. from an agent over MCP). Starts quarantined until a human settles it."""
