@@ -197,7 +197,7 @@ async function run() {
           <div class="meta">Decided ${day(c.entry.decided_at)} in “${esc(c.entry.source.title)}”</div>
           <p style="margin:8px 0 0">${esc(c.explanation)}</p>
           <div class="actions"><button class="ghost" data-keep="1">Keep this decision</button><button class="ghost" data-replace="${c.entry.id}">I’ve changed my mind, replace it</button></div></div>`).join("") +
-        `<p class="meta" style="margin:10px 0 0">Checked by ${esc(v.model)}</p><div class="actions" style="margin-top:12px"><button class="ghost" id="wrong">This isn’t a conflict, teach Sthira</button></div></div>`;
+        `<p class="meta" style="margin:10px 0 0">Flagged, then double-checked by a self-correction pass · ${esc(v.model)}</p><div class="actions" style="margin-top:12px"><button class="ghost" id="wrong">This isn’t a conflict, teach Sthira</button></div></div>`;
       $("#wrong").onclick = () => teach(text);
       $("#result").querySelectorAll("[data-keep]").forEach(b => b.onclick = () => {
         b.closest(".actions").innerHTML = `<span class="meta">Kept. Tell your agent to follow the settled decision.</span>`; });
