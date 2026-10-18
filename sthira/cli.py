@@ -257,6 +257,38 @@ def demo(db: str = typer.Option(str(config.db_path().parent / "demo.db"), help="
 
 
 @app.command()
+def watch(
+    dirs: Optional[list[str]] = typer.Argument(None, help="Folders to watch. Default: ~/.claude/projects and ~/.sthira/inbox"),
+    interval: float = typer.Option(10.0, help="Seconds between scans"),
+    backfill: bool = typer.Option(False, "--backfill", help="Also ingest files that already exist (slow on a local model)"),
+):
+    """Keep the ledger current: read new Claude Code sessions and anything dropped in the inbox folder, automatically."""
+    import time
+    from pathlib import Path
+
+    from . import watch as _watch
+
+    targets = [Path(d).expanduser() for d in dirs] if dirs else _watch.default_dirs()
+    console.print(f"Watching {', '.join(str(t) for t in targets)} with [bold]{config.model()}[/] (Ctrl+C to stop)")
+    first = True
+    try:
+        while True:
+            con = store.connect()
+            try:
+                for ev in _watch.scan_once(con, targets, first_run_backfill=backfill or not first):
+                    if ev.error:
+                        console.print(f"[red]✗[/] {ev.path}: {ev.error}")
+                    else:
+                        console.print(f"[green]✓[/] {Path(ev.path).name}: {ev.messages} new messages, {ev.entries} proposed entries")
+            finally:
+                con.close()
+            first = False
+            time.sleep(interval)
+    except KeyboardInterrupt:
+        console.print("Stopped.")
+
+
+@app.command()
 def where():
     """Show where the ledger lives."""
     console.print(str(config.db_path()))

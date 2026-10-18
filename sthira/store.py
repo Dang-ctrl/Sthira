@@ -59,6 +59,12 @@ CREATE TABLE IF NOT EXISTS feedback (
     snippet TEXT,
     created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS watched (
+    path TEXT PRIMARY KEY,
+    size INTEGER NOT NULL,
+    mtime REAL NOT NULL,
+    seen_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS runs (
     id TEXT PRIMARY KEY,
     kind TEXT NOT NULL,
@@ -134,7 +140,22 @@ def pending_conversations(con: sqlite3.Connection, source_ids: list[str] | None 
             "conv_title": r["conv_title"] or r["source_title"] or r["conv_id"], "messages": [],
         })
         c["messages"].append(dict(r))
+    for c in convs.values():
+        c["messages"] = _with_context(c["messages"])
     return list(convs.values())
+
+
+CONTEXT_MESSAGES = 2
+
+
+def _with_context(msgs: list[dict]) -> list[dict]:
+    """Only what's new, plus the couple of messages before it so 'ok, go with that' still has something to refer to.
+    Without this, one new message in a long session would send the whole session to the model again."""
+    keep = set()
+    for i, m in enumerate(msgs):
+        if not m["extracted"]:
+            keep.update(range(max(0, i - CONTEXT_MESSAGES), i + 1))
+    return [m for i, m in enumerate(msgs) if i in keep]
 
 
 def mark_extracted(con: sqlite3.Connection, message_ids: list[str]) -> None:
