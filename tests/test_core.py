@@ -75,3 +75,16 @@ def test_sync_replaces_managed_block(tmp_path):
     sync.sync(con, str(target))
     text = target.read_text(encoding="utf-8")
     assert text.count(sync.START) == 1 and "hand-written notes" in text and "Use Postgres" in text
+
+
+def test_rejections_become_rules_for_next_extraction(tmp_path):
+    from sthira import api, feedback
+
+    con = store.connect(tmp_path / "t.db")
+    e = store.insert_entry(con, _entry("The user named the kitten Miso", status="proposed"))
+    assert feedback.extraction_guidance(con) == ""
+    api.review(e.id, "reject", "Personal life is not a project decision.", con=con)
+    g = feedback.extraction_guidance(con)
+    assert "Personal life is not a project decision." in g and "kitten Miso" in g
+    s = feedback.stats(con)
+    assert s["corrections"] == 1 and s["entries"]["rejected"] == 1

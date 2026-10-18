@@ -74,6 +74,17 @@ def check(text: str, con=None) -> Verdict:
     return _check.check(con, text)
 
 
+def scan(path: str, con=None, max_messages: int = 8) -> list[dict]:
+    """Check what an AI agent proposed in a session transcript against the ledger."""
+    con = con or store.connect()
+    out = []
+    for _src, _key, _title, msgs in parse_path(path):
+        proposals = [m for m in msgs if m.role == "assistant" and len(m.text) > 40][-max_messages:]
+        for m in proposals:
+            out.append({"msg_id": m.msg_id, "text": m.text, "verdict": _check.check(con, m.text)})
+    return out
+
+
 def correct_check(text: str, note: str, con=None) -> None:
     """User says a verdict was wrong; the note is fed into future checks."""
     con = con or store.connect()

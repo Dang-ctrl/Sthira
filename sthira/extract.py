@@ -20,6 +20,8 @@ Record ONLY items the person would want every future AI assistant to respect:
 - lesson: something tried that failed or worked, worth remembering
 - assumption: a stated premise a decision depends on
 Rules:
+- If the person explicitly leaves something undecided ("let's revisit", "can't decide yet"), it is an open_question, not a decision.
+- Write statements about the project, not about "the user" or "the assistant" (e.g. "Login uses magic links only").
 - Most messages contain NOTHING worth recording. Returning an empty list is normal and correct.
 - Do not record suggestions the assistant made unless the user accepted them.
 - Do not record greetings, thanks, brainstorming that was not chosen, or questions that were answered.
