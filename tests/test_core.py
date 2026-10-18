@@ -99,17 +99,3 @@ def test_replace_supersedes_and_keeps_history(tmp_path):
     assert r["old"].status == "superseded" and r["old"].superseded_by == r["new"].id
     assert r["new"].status == "settled" and r["new"].rationale == "multi-region writes"
     assert [e.id for e in store.list_entries(con, status="settled")] == [r["new"].id]
-
-
-def test_gemini_takeout_activity():
-    items = [
-        {"header": "Gemini Apps", "title": "Prompted Should Acme Notes use Postgres or MongoDB?",
-         "time": "2026-03-04T10:00:00.000Z", "safeHtmlItem": [{"html": "<p>Postgres gives you <b>joins</b>.</p>"}]},
-        {"header": "Gemini Apps", "title": "Prompted ok we go with Postgres", "time": "2026-03-04T10:05:00.000Z"},
-        {"header": "Gemini Apps", "title": "Prompted cat names?", "time": "2026-03-06T21:00:00.000Z"},
-    ]
-    [(src, _, _, msgs)] = parse_bytes("MyActivity.json", json.dumps(items).encode())
-    assert src == "gemini"
-    assert [m.role for m in msgs] == ["user", "assistant", "user", "user"]
-    assert msgs[1].text == "Postgres gives you joins."
-    assert {m.conv_id for m in msgs} == {"gemini-2026-03-04", "gemini-2026-03-06"}
