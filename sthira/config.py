@@ -31,3 +31,8 @@ def openai_base_url() -> str:
 def openai_api_key() -> str:
     return (os.environ.get("STHIRA_OPENAI_API_KEY") or os.environ.get("AI_GATEWAY_API_KEY")
             or os.environ.get("VERCEL_OIDC_TOKEN", ""))
+
+
+def fallback_model() -> str:
+    """Optional second open-weight model on the same endpoint, used when the first is rate limited."""
+    return os.environ.get("STHIRA_FALLBACK_MODEL", "")

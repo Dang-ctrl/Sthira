@@ -21,7 +21,7 @@ mcp = [
 web = ["uvicorn>=0.29"]
 
 [project.scripts]
-sthira = "sthira.cli:app"
+sthira = "sthira.cli:main"
 
 [dependency-groups]
 dev = ["pytest>=8"]

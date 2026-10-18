@@ -112,6 +112,8 @@ def extract(con: sqlite3.Connection, limit: int | None = None, on_progress=None,
             system = SYSTEM + ("\n\n" + guidance if guidance else "")
             try:
                 data = llm.chat_json(system, user, SCHEMA)
+            except llm.LLMUnavailable:
+                raise  # nothing will work until the server is back; don't report "nothing new"
             except llm.LLMError:
                 continue
             for item in data.get("entries", []):
