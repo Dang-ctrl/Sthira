@@ -22,7 +22,7 @@ if os.environ.get("VERCEL") and "STHIRA_PROVIDER" not in os.environ:
 
 from sthira import api, config, llm, store  # noqa: E402
 
-from . import seed  # noqa: E402
+from . import fallback, seed  # noqa: E402
 
 app = FastAPI(title="Sthira", version="0.1.0")
 _lock = threading.Lock()
@@ -110,15 +110,20 @@ def supersede(old_id: str, new_id: str):
 def check(body: CheckBody):
     if not body.text.strip():
         raise HTTPException(400, "text is empty")
+    text = body.text[:4000]
     try:
-        return api.check(body.text[:4000], con=con()).model_dump()
+        return api.check(text, con=con()).model_dump()
     except Exception as e:
-        # If the hosted model is unreachable, the built-in examples fall back to verdicts recorded from a
-        # real local Qwen3 run (labelled as such). Anything else surfaces the error honestly.
-        cached = _cached_checks().get(body.text.strip())
+        # If the hosted model is unreachable: the built-in examples fall back to verdicts recorded from a
+        # real local Qwen3 run, and other text to a keyword match on explicitly rejected alternatives.
+        # Both are labelled as such. If neither applies, surface the error honestly.
+        cached = _cached_checks().get(fallback.normalize(text))
         if cached:
             cached["model"] = f"{cached['model']} (recorded from a local run; hosted model unavailable)"
-            return cached
+            return {**cached, "fallback": "recorded"}
+        v = fallback.keyword_check(text, api.list_entries("settled", con=con()))
+        if v:
+            return {**v.model_dump(), "fallback": "keyword"}
         raise HTTPException(502, f"Model call failed: {e}")
 
 
@@ -126,7 +131,8 @@ def _cached_checks() -> dict:
     import json
 
     p = ROOT / "demo" / "cached_checks.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    data = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    return {fallback.normalize(k): v for k, v in data.items()}
 
 
 @app.post("/api/correct")
