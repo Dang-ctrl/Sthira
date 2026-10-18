@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import io
 import os
 import threading
+import zipfile
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -141,20 +143,38 @@ def correct(body: CorrectBody):
     return {"ok": True}
 
 
+MAX_UPLOAD = 4_000_000
+MAX_UNZIPPED = 20_000_000
+TOO_LARGE = "File too large for the hosted demo ({}). Run Sthira locally for full exports."
+
+
+async def _read_upload(file: UploadFile) -> bytes:
+    data = await file.read()
+    if len(data) > MAX_UPLOAD:
+        raise HTTPException(413, TOO_LARGE.format("4 MB"))
+    if (file.filename or "").lower().endswith(".zip"):
+        # The 4 MB cap is on the compressed bytes; the parser reads every conversations.json fully into
+        # memory, so a small zip could expand to gigabytes. Declared sizes bound what zipfile will inflate.
+        try:
+            with zipfile.ZipFile(io.BytesIO(data)) as z:
+                unzipped = sum(i.file_size for i in z.infolist() if i.filename.endswith("conversations.json"))
+        except zipfile.BadZipFile:
+            raise HTTPException(400, "Not a valid zip file.")
+        if unzipped > MAX_UNZIPPED:
+            raise HTTPException(413, TOO_LARGE.format("20 MB unzipped"))
+    return data
+
+
 @app.post("/api/ingest")
 async def ingest(file: UploadFile = File(...), kind: str | None = Form(None)):
-    data = await file.read()
-    if len(data) > 4_000_000:
-        raise HTTPException(413, "File too large for the hosted demo (4 MB). Run Sthira locally for full exports.")
+    data = await _read_upload(file)
     return api.ingest_upload(file.filename or "upload.json", data, kind or None, con=con())
 
 
 @app.post("/api/import")
 async def import_and_extract(file: UploadFile = File(...), kind: str | None = Form(None)):
     """Ingest + extract in one request (serverless instances don't share /tmp between requests)."""
-    data = await file.read()
-    if len(data) > 4_000_000:
-        raise HTTPException(413, "File too large for the hosted demo (4 MB). Run Sthira locally for full exports.")
+    data = await _read_upload(file)
     c = con()
     r = api.ingest_upload(file.filename or "upload.json", data, kind or None, con=c)
     try:
