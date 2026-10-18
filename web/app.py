@@ -103,7 +103,12 @@ def replace(old_id: str, body: ReplaceBody):
 
 @app.post("/api/entries/{old_id}/supersede/{new_id}")
 def supersede(old_id: str, new_id: str):
-    return api.supersede(old_id, new_id, con=con()).model_dump()
+    try:
+        return api.supersede(old_id, new_id, con=con()).model_dump()
+    except KeyError as e:
+        raise HTTPException(404, f"entry not found: {e}")
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
 
 @app.post("/api/check")
@@ -161,7 +166,7 @@ async def import_and_extract(file: UploadFile = File(...), kind: str | None = Fo
         llm.chat_json("Reply with JSON.", 'Return {"ok": true}', {"type": "object", "properties": {"ok": {"type": "boolean"}}, "required": ["ok"]})
     except Exception as e:
         raise HTTPException(502, f"Model call failed: {e}")
-    entries = api.extract(3, con=c)
+    entries = api.extract(3, con=c, source_ids=r["source_ids"])  # only this upload, never someone else's
     return {"messages": r["messages"], "sources": r["sources"], "entries": [e.model_dump() for e in entries]}
 
 
