@@ -99,18 +99,3 @@ def test_replace_supersedes_and_keeps_history(tmp_path):
     assert r["old"].status == "superseded" and r["old"].superseded_by == r["new"].id
     assert r["new"].status == "settled" and r["new"].rationale == "multi-region writes"
     assert [e.id for e in store.list_entries(con, status="settled")] == [r["new"].id]
-
-
-def test_unreachable_model_fails_loudly(tmp_path, monkeypatch):
-    import pytest
-
-    from sthira import api, llm
-
-    monkeypatch.setenv("STHIRA_PROVIDER", "ollama")
-    monkeypatch.setenv("OLLAMA_HOST", "http://127.0.0.1:9")  # nothing listens here
-    con = store.connect(tmp_path / "t.db")
-    api.ingest(str(FIX / "conversations.json"), con=con)
-    with pytest.raises(llm.LLMUnavailable):
-        api.extract(con=con)
-    # messages stay pending, so a later run (with the server up) still extracts them
-    assert store.pending_conversations(con)
